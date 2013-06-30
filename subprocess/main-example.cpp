@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	Subprocess proc = Subprocess::run("test.py");
+	Subprocess proc = Subprocess::run("subprocess-example.py");
 	
 	for(int i = 0; i < 8; i++) {
 		if(!proc.isAlive())
