@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<script src="http://code.jquery.com/jquery-1.9.0rc1.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <style>
+    
+    </style>
+</head>
+<body>
+    <canvas id="goCanvas" width="900px" height="600px">asd</canvas>
+<script>
+
+$(document).ready(function() {
+      App.main();
+});  
+    
+App = new function() {
+    Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg'};
+
+    this.canvas = document.getElementById("goCanvas");
+    this.sprites = new Array();
+    
+    this.main = function() {
+        this.board = new Board(9, 25, 25, 550, 550);
+        this.board.markers.push({x: 5,y: 5});
+        this.board.markers.push({x: 3,y: 3});
+        this.board.markers.push({x: 7,y: 7});
+        this.board.markers.push({x: 3,y: 7});
+        this.board.markers.push({x: 7,y: 3});
+        
+        /*var spr = new Sprite(600,100,100,100,Images['arrow_right'])
+        spr.onClick = function() {
+            alert("clicked");
+        }
+        this.sprites.push(spr);*/
+        
+        this.canvas.addEventListener("mousedown", this.onMouseDown, false);
+        
+        this.redraw();
+    }
+    
+    this.onMouseDown = function(evt) {
+        for(var i = 0; i < App.sprites.length; i++)
+            App.sprites[i].inject(evt.pageX,evt.pageY);
+    }
+    
+    this.redraw = function() {
+        var ctx = this.canvas.getContext("2d");
+        ctx.fillStyle = "#E8E6A7";
+        ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+        this.board.draw(ctx);
+        
+        for(var i = 0; i < this.sprites.length; i++)
+            this.sprites[i].draw(ctx);
+    }
+    
+    
+}
+
+Sprite = function(left,top,width,height, src) {
+    this.img = new Image();
+    this.img.src = src;
+    this.width = width;
+    this.height = height;
+    this.left = left;
+    this.top = top;
+    this.onClick = null;
+    
+    this.inject = function(x,y) {
+        if(this.onClick != null && 
+            x > this.left && x < this.left + this.width && 
+            y > this.top && y < this.top + this.height)
+            this.onClick();
+    }
+    
+    this.draw = function(ctx) {
+        ctx.drawImage(this.img, left, top, this.width, this.height);
+    } 
+}
+
+Board = function(size,osX,osY,width,height) {
+    this.size = size;
+    this.osX = osX;
+    this.osY = osY;
+    this.width = width;
+    this.height = height;
+    this.cspaceX = width/(size+1);
+    this.cspaceY = height/(size+1);
+    this.cells = new Array(size);
+    this.markers = new Array();
+    
+    for(var row = 0; row < size; row++) {
+        this.cells[row] = new Array(size);
+    }
+    
+    this.draw = function(ctx) {
+        var cspaceX = this.width/(this.size+1);
+        var cspaceY = this.height/(this.size+1);
+        
+        ctx.fillStyle = "#EDD487";
+        ctx.fillRect(this.osX,this.osY,this.width,this.height);
+    
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.7)";
+        for(var i = 1; i <= this.size; i++) {
+            ctx.beginPath();
+            ctx.moveTo( this.osX + this.cspaceX, 
+                        this.osY + this.cspaceY * i);
+            ctx.lineTo( this.osX + this.cspaceX * this.size, 
+                        this.osY + this.cspaceY * i);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo( this.osX + this.cspaceX * i,
+                        this.osY + this.cspaceY);
+            ctx.lineTo( this.osX + this.cspaceX * i,
+                        this.osY + this.cspaceY * this.size);
+            ctx.stroke();
+        }
+        var mWidth = this.width/100;
+        var mHeight = this.height/100;
+        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        for(var i = 0; i < this.markers.length; i++) {
+			var cell = this.markers[i];
+			var coord = {x: this.osX + this.cspaceX * cell.x, y: this.osY + this.cspaceY * cell.y};
+			ctx.fillRect(coord.x-mWidth,coord.y-mHeight,mWidth*2,mHeight*2);
+		}
+    }
+}
+
+</script>
+</body> 
+</html>
