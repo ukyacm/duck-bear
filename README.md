@@ -22,27 +22,6 @@ Board::place(x,y) throws IllegalMoveException
 	- return to previous state (after resolve)
 	- suicide	(after resolve)
 
-API Transactions
-[BOT1] ----------------------- [ Engine ] ----------------------- [BOT2]
-   x <------ init [pnum] --------- x
-                                   x -------- init [pnum] ---------> x
-   x <---- request move [bs] ----- x 
-   x ----- move x,y, or pass ----> x
-                               [RESOLVE]
-                                   x ----- request move [bs] ----> x 
-                                   x <---- move x,y, or pass ----- x
-                               [RESOLVE]
-                                  ...
-                                  ...
-
-Web Player
-- transaction: (turn number, board state, score?)
-
-Notes:
-- [pnum] is player number of bot
-- [bs] is array of board as a single string of length BOARD_SIZE*BOARD_SIZE
-- BOT1 is arbitrarily first to move
-
 API
 - languages: C++, Java, Python
 - can pass
