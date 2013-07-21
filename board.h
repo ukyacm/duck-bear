@@ -1,7 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <vector>
 #include <string>
+
 
 enum Piece {
 	NONE,
@@ -9,22 +11,29 @@ enum Piece {
 	BLACK
 };
 
-class IllegalMoveException : public std::exception {
+typedef std::vector<Piece> Row;
+typedef std::vector<Row> Grid;
+
+/*class IllegalMoveException : public std::exception {
 	public:
-	string error;
-	IllegalMoveException(const string e);
+	std::string error;
+	IllegalMoveException(const std::string e);
 	const char * what();
-};
+};*/
 
 class Board {
 	public:
-	Piece board[9][9];
+	static const int BOARD_SIZE = 9;
+
+	Grid curr, prev, prever;
 	
 	Board();
 	~Board();
 
 	void place(const int x, const int y);
 	Piece at(const int x, const int y) const;
+
+	void resolve();
 };
 
 #endif
