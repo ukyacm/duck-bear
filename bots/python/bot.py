@@ -18,7 +18,7 @@ def parseBoardState(data):
 	for i in range(BSIZE):
 		row = []
 		for j in range(BSIZE):
-			row.append(data[i])
+			row.append(data[ptr])
 			ptr += 1
 			
 		grid.append(row)
@@ -26,12 +26,12 @@ def parseBoardState(data):
 while True:
 	# read msg
 	msg = getMessage().split(' ')
-	if msg[0] == "init":
+	if msg[0] == "INIT":
 		player = int(msg[1])
-	elif msg[0] == "requestmove":
+	elif msg[0] == "REQUESTMOVE":
 		boardstate = parseBoardState(msg[1])
 		x, y = onMyTurn(player,boardState)
-		sendMessage("move %s %s" % (x,y))
+		sendMessage("MOVE %s %s" % (x,y))
 
 def onMyTurn():
 	
