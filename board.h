@@ -14,16 +14,16 @@ enum Piece {
 typedef std::vector<Piece> Row;
 typedef std::vector<Row> Grid;
 
-class IllegalMoveException : public std::exception {
+/*class IllegalMoveException : public std::exception {
 	public:
-	string error;
-	IllegalMoveException(const string e);
+	std::string error;
+	IllegalMoveException(const std::string e);
 	const char * what();
-};
+};*/
 
 class Board {
 	public:
-	const int BOARD_SIZE = 9;
+	static const int BOARD_SIZE = 9;
 
 	Grid curr, prev, prever;
 	
