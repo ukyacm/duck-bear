@@ -6,3 +6,13 @@ Board::Board() {
 		curr.push_back(r);
 	}
 }
+
+Piece Board::at(int x, int y) {
+	return curr.at(x).at(y);
+}
+
+void Board::place(int x, int y, Piece p) {
+	
+
+
+}

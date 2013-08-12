@@ -30,7 +30,7 @@ class Board {
 	Board();
 	~Board();
 
-	void place(const int x, const int y);
+	void place(const int x, const int y, const Piece p);
 	Piece at(const int x, const int y) const;
 
 	void resolve();
