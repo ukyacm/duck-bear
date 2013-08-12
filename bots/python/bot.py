@@ -2,7 +2,7 @@
 
 import sys, os, random, time
 
-BSIZE = 7
+BSIZE = 9
 player = None
 
 def getMessage():
