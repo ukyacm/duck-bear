@@ -31,8 +31,9 @@ class Board {
 
 	void place(const int x, const int y, const Piece p);
 	Piece at(const int x, const int y) const;
-
-	void resolve();
+	
+	private:
+	void resolve(Player player);
 };
 
 #endif
