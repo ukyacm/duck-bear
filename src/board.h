@@ -25,7 +25,7 @@ class Board {
 	public:
 	static const int BOARD_SIZE = 9;
 
-	Grid curr, prev, prever;
+	Grid curr, prev, last;
 	
 	Board();
 
