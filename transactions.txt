@@ -1,15 +1,39 @@
 API Transactions
 [BOT1] ----------------------- [ Engine ] ----------------------- [BOT2]
+   x --------- "HI!" ------------> x
    x <------ init [pnum] --------- x
+   x --------- "READY!" ---------> x 
+ [BLOCK]
+                                   x <--------- "HI!" -------------- x
                                    x -------- init [pnum] ---------> x
+                                   x <-------- "READY!" ------------ x
+                                                                   [BLOCK]
    x <---- request move [bs] ----- x 
    x ----- move x,y, or pass ----> x
+ [BLOCK]
                                [RESOLVE]
                                    x ----- request move [bs] ------> x 
                                    x <---- move x,y, or pass ------- x
+                                                                   [BLOCK]
                                [RESOLVE]
-                                  ...
-                                  ...
+   x <----------- end game ------- x
+ [EXIT]
+                                   x ------------ end game --------> x
+																   [EXIT]
+                                [EXIT]
+
+Bot API:
+	* sends message to server through standard out
+	* receives message from server through standard in
+	* blocks after sending READY! and RESPONSE_MOVE messages,
+		until a REQUEST_MOVE message is received
+
+Message Format:
+	REQUEST_MOVE <9x9 array board state> <X> <Y> <P>
+	RESPONSE_MOVE <X> <Y> <P>
+	INITIALIZE <PNUM>
+	HI!
+	READY!
 
 Web Player
 - transaction: (turn number, board state, score?)
