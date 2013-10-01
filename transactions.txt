@@ -37,6 +37,7 @@ Message Format:
 
 Web Player
 - transaction: (turn number, board state, score?)
+- "(B|W) ((X),(Y)|inv)"
 
 Notes:
 - [pnum] is player number of bot
