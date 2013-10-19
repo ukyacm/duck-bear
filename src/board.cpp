@@ -1,4 +1,5 @@
 #include "board.h"
+#include "common.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ bool Board::isOccupied(int x, int y) {
 
 void Board::place(int x, int y, Piece player) {
 	if (!((0 <= x) && (x < BOARD_SIZE) && (0 <= y) && (y < BOARD_SIZE))) {
-		throw new IllegalMoveException("POSITION OUT OF BOUNDS")
+		throw new IllegalMoveException("POSITION OUT OF BOUNDS");
 	}
 
 	if (isOccupied(x,y)) {
@@ -38,7 +39,7 @@ void Board::place(int x, int y, Piece player) {
 }
 
 vector<Point> Board::getNeighbors(Point p) {
-	vector<Point> points();
+	vector<Point> points;
 	if (p.x-1 >= 0) {points.push_back(Point(p.x-1,p.y));}
 	if (p.x+1 < BOARD_SIZE) {points.push_back(Point(p.x+1,p.y));}
 	if (p.y-1 >= 0) {points.push_back(Point(p.x,p.y-1));}
@@ -50,7 +51,7 @@ vector<vector<Point> > Board::groupify(vector<Point> points) {
 	vector<vector<Point> > group;
 
 	for (vector<Point>::iterator p = points.begin(); p != points.end(); ++p) {
-		nbrs = getNeighbors(*p);
+		vector<Point> nbrs = getNeighbors(*p);
 		for (vector<Point>::iterator n = nbrs.begin(); n != nbrs.end(); ++n) {
 			if (at(*p) == at(*n)) {
 				
@@ -59,14 +60,14 @@ vector<vector<Point> > Board::groupify(vector<Point> points) {
 	}
 }
 
-void Board::resolve(Piece player, int x int y) {
+void Board::resolve(Piece player, int x, int y) {
 	vector<Point> black;
 	vector<Point> white;
 
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		for (int j = 0; j < BOARD_SIZE; j++) {
 			Point p(i,j);
-			if (at(i,j) == Piece.WHITE) {
+			if (at(i,j) == WHITE) {
 				white.push_back(p);
 			} else {
 				black.push_back(p);
@@ -74,17 +75,17 @@ void Board::resolve(Piece player, int x int y) {
 		}
 	}
 
-	vector<vector<Point> > black_groups;
-	vector<vector<Point> > white_groups;
+	vector<vector<Point> > black_groups = groupify(black);
+	vector<vector<Point> > white_groups = groupify(white);
 
 
 }
 
-Piece Board::at(int x, int y) {
+Piece Board::at(const int x, const int y) const {
 	return curr.at(x).at(y);
 }
 
-Piece Board::at(Piece p) {
+Piece Board::at(const Point p) const {
 	return at(p.x,p.y);
 }
 

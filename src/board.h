@@ -36,11 +36,13 @@ class Board {
 	void place(const int x, const int y, const Piece p);
 	Piece at(const int x, const int y) const;
 	Piece at(const Point p) const;
-	
+	bool isOccupied(int x, int y);
+
 	std::string toString();
 
 	private:
-	std::vector<Piece> getNeighbors(Point p);
+	std::vector<std::vector<Point> > groupify(std::vector<Point> points);
+	std::vector<Point> getNeighbors(Point p);
 	void resolve(Piece player, int x, int y);
 };
 
