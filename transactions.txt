@@ -1,4 +1,5 @@
 API Transactions
+
 [BOT1] ----------------------- [ Engine ] ----------------------- [BOT2]
    x --------- "HI!" ------------> x
    x <------ init [pnum] --------- x
@@ -26,6 +27,8 @@ API Transactions
 																  [EXIT]
                                 [EXIT]
 
+* BOT1 is White
+
 Bot API:
 	* sends message to server through standard out
 	* receives message from server through standard in
@@ -38,6 +41,7 @@ Message Format:
 	INITIALIZE <PNUM>
 	HI!
 	READY!
+	ENDGAME
 
 Web Player
 - transaction: (turn number, board state, score?)

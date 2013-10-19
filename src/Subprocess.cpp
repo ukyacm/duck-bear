@@ -7,12 +7,9 @@
 #include <sys/wait.h>
 #include <time.h>
 #include "Subprocess.h"
+#include "common.h"
 
 using namespace std;
-
-const char * ReadTimeoutException::what() {
-	return "read operation timed out";
-}
 
 Subprocess::Subprocess(pid_t id, int fr, int fw) 
 	: pid(id), fdread(fr), fdwrite(fw) {}
@@ -61,7 +58,7 @@ string Subprocess::readline(int timeout) {
 		if (select(fdread+1,&fds,0,0,&timeleft) > 0)
 			read(fdread,&temp,1);
 		else
-			throw ReadTimeoutException();
+			throw ReadTimeoutException(timeout);
 		
 		// delimiter found, bring and return result
 		if(temp == '\n')

@@ -54,11 +54,4 @@ public:
 	static Subprocess run(std::string command);
 };
 
-/* * *
- * Catch this when calling readline(int).
- */
-class ReadTimeoutException : public std::exception {
-	const char * what();
-};
-
 #endif
