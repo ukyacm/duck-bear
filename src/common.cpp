@@ -1,5 +1,6 @@
 #include "common.h"
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -34,4 +35,8 @@ const char* ReadTimeoutException::what() const throw() {
 	stringstream ss;
 	ss << "Elapsed Time: " << mTime;
 	return ss.str().c_str();
+}
+
+void log(std::string bot, std::string message) {
+	cout << "[" << bot << "] " << message << flush << endl;
 }

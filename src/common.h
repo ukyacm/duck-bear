@@ -38,4 +38,6 @@ public:
 	virtual const char* what() const throw();
 };
 
+void log(std::string bot, std::string message);
+
 #endif
