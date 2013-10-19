@@ -3,23 +3,27 @@ API Transactions
    x --------- "HI!" ------------> x
    x <------ init [pnum] --------- x
    x --------- "READY!" ---------> x 
- [BLOCK]
+ BLOCK]
                                    x <--------- "HI!" -------------- x
                                    x -------- init [pnum] ---------> x
                                    x <-------- "READY!" ------------ x
-                                                                   [BLOCK]
+                                                                 [BLOCK]
    x <---- request move [bs] ----- x 
    x ----- move x,y, or pass ----> x
  [BLOCK]
                                [RESOLVE]
                                    x ----- request move [bs] ------> x 
                                    x <---- move x,y, or pass ------- x
-                                                                   [BLOCK]
+                                                                 [BLOCK]
+                               [RESOLVE]
+                               
+                                   ..
+                                   
                                [RESOLVE]
    x <----------- end game ------- x
  [EXIT]
                                    x ------------ end game --------> x
-																   [EXIT]
+																  [EXIT]
                                 [EXIT]
 
 Bot API:
