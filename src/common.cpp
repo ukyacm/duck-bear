@@ -3,6 +3,17 @@
 
 using namespace std;
 
+IllegalMoveException::IllegalMoveException(const string w) throw() {
+	err = w;
+}
+
+IllegalMoveException::~IllegalMoveException() throw() {}
+
+const char * IllegalMoveException::what() const throw() {
+	return err.c_str();
+}
+
+
 BadMessageException::BadMessageException (string message) throw() 
 	: mMessage(message) {}
 
@@ -21,6 +32,6 @@ ReadTimeoutException::~ReadTimeoutException() throw() {}
 
 const char* ReadTimeoutException::what() const throw() {
 	stringstream ss;
-	ss << "Message: " << mTime;
+	ss << "Elapsed Time: " << mTime;
 	return ss.str().c_str();
 }

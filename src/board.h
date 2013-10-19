@@ -3,7 +3,8 @@
 
 #include <vector>
 #include <string>
-
+#include <sstream>
+#include <exception>
 
 enum Piece {
 	NONE,
@@ -11,15 +12,18 @@ enum Piece {
 	BLACK
 };
 
+struct Point {
+	int x;
+	int y;
+
+	Point(int xx, int yy) {
+		x = xx;
+		y = yy;
+	}
+};
+
 typedef std::vector<Piece> Row;
 typedef std::vector<Row> Grid;
-
-class IllegalMoveException : public std::exception {
-	public:
-	std::string error;
-	IllegalMoveException(const std::string e);
-	const char * what();
-};
 
 class Board {
 	public:
@@ -31,9 +35,13 @@ class Board {
 
 	void place(const int x, const int y, const Piece p);
 	Piece at(const int x, const int y) const;
+	Piece at(const Point p) const;
 	
+	std::string toString();
+
 	private:
-	void resolve(Player player);
+	std::vector<Piece> getNeighbors(Point p);
+	void resolve(Piece player, int x, int y);
 };
 
 #endif

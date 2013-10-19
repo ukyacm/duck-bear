@@ -4,6 +4,18 @@
 #include <exception>
 #include <string>
 
+/*
+ * Catch this when illegal game moves have been made
+ */
+
+class IllegalMoveException : public std::exception {
+	std::string err;
+	public:
+	IllegalMoveException(const std::string w) throw();
+	virtual ~IllegalMoveException() throw();
+	virtual const char * what() const throw();
+};
+
 /* * *
  * Catch this when bad message received
  */
