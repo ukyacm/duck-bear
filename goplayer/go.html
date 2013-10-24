@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
 <html>
+<!-- THIS FILE HOLDS THE FINISHED GAME MOVE BY MOVE -->
+<script src="two_moves.jsonp"></script>
+
 <script src="http://code.jquery.com/jquery-1.9.0rc1.js"></script>
 <head>
     <meta charset="UTF-8">
-    <style>
-    
-    </style>
+    <style></style>
 </head>
 <body>
     <canvas id="goCanvas" width="900px" height="600px">asd</canvas>
@@ -16,10 +17,12 @@ $(document).ready(function() {
 });  
     
 App = new function() {
-    Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg'};
+    Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg' };
 
     this.canvas = document.getElementById("goCanvas");
     this.sprites = new Array();
+    // gameMoves are already held in gameMoves because the json file is included at the top
+    //this.gameMoves = gameMoves;
     
     this.main = function() {
         this.board = new Board(9, 25, 25, 550, 550);
@@ -29,14 +32,14 @@ App = new function() {
         this.board.markers.push({x: 3,y: 7});
         this.board.markers.push({x: 7,y: 3});
         
-        /*var spr = new Sprite(600,100,100,100,Images['arrow_right'])
+
+        var spr = new Sprite(600,100,100,100,Images['arrow_right']);
         spr.onClick = function() {
             alert("clicked");
         }
-        this.sprites.push(spr);*/
-        
+
+        this.sprites.push(spr);
         this.canvas.addEventListener("mousedown", this.onMouseDown, false);
-        
         this.redraw();
     }
     
@@ -51,11 +54,39 @@ App = new function() {
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.board.draw(ctx);
         
-        for(var i = 0; i < this.sprites.length; i++)
-            this.sprites[i].draw(ctx);
+        var lastMove = gameMoves.length-1;
+
+        printBoard(2,ctx);
+
+        // for(var i = 0; i < this.sprites.length; i++){
+        //    this.sprites[i].draw(ctx);
+        // }   
     }
-    
-    
+}
+
+printBoard = function(turn, ctx){
+    for (var i = 0; i < 8; i++) {
+        for (var z=0; z < 8; z++){ 
+            if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '1' )
+                GamePiece(i, z, 'white', ctx);
+            if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '2')
+                GamePiece(i, z, 'black', ctx);
+        }
+    }
+}
+
+GamePiece = function(osX, osY, color,ctx) {
+    var radius = 25;
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc( 80+(parseInt(osX)*55), 80+(55*parseInt(osY)), radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#87a0ed';
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
 }
 
 Sprite = function(left,top,width,height, src) {
@@ -75,7 +106,10 @@ Sprite = function(left,top,width,height, src) {
     }
     
     this.draw = function(ctx) {
-        ctx.drawImage(this.img, left, top, this.width, this.height);
+        this.img.onload = function(){
+            ctx.drawImage(this.img, left, top, this.width, this.height);
+        }
+        this.img.src = src;            
     } 
 }
 
