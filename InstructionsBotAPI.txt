@@ -1,0 +1,33 @@
+-----------------------------------
+Things to note
+----------------------------------
+* Engine program acts as mediator between two Bot programs
+* Bot programs are executables or scripts that can be executed via an interpreter
+* Bot programs are not their own process, but rather subprocesses spawned by the Engine
+* When each bot program is spawned, its standard input/output pipes are connected to a stream handled by the engine
+* Engine reads and writes to this stream to communicate with the bot
+* Bot programs write and read from standard IO to communicate with the server
+* The transaction flow is documented in transactions.txt, so look in there 
+for logic and message format.
+
+-----------------------------------
+Writing your bot
+-----------------------------------
+As of right now, use testbot.py as an example bot API to model yours 
+after. It should be in the same directory as this file. Remember that 
+messages are delimited by an ENDLINE character, and that each value in a message 
+is delimited by a SPACE character. The bots should block when trying to 
+read from standard in until a full message is received (i.e. newline character 
+found) before parsing it. This is usually done with a simple 
+readline() call to standard in. 
+
+-----------------------------------
+Testing your bot
+-----------------------------------
+For now it is only possible to test your bot's greeting using the partially 
+completed engine.
+1) First, compile the engine, which will create the engine executable in root
+	$ make
+2) Run the engine with two instances of testbot.py
+	$ ./GoEngine testbot.py testbot.py
+3) Replace testbot.py with your own bot and make sure it runs error free
