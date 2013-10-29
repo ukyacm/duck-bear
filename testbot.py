@@ -12,18 +12,20 @@ class GoBot:
 		if msg[0] == "INITIALIZE":
 			player = int(msg[1])
 		else:
-			exit("bad msg, expected init")
+			exit("bad msg, expected init\n")
 		
 		self.sendMessage("READY!")
 		
 		while True:
 			msg = self.getMessage().split(' ')
 			if msg[0] == "REQUEST_MOVE":
-				boardstate = parseBoardState(msg[1])
-				x, y, p = onMyTurn(player,boardState)
+				boardState = self.parseBoardState(msg[1])
+				x, y, p = self.onMyTurn(player,boardState)
 				self.sendMessage("RESPONSE_MOVE %s %s %s" % (x,y,p))
+			elif msg[0] == "END_GAME":
+				exit()
 			else:
-				exit("bad msg, expected move req")
+				exit("bad msg, expected move; got '" + msg[0] + "'\n")
 
 	def getMessage(self):
 		return sys.stdin.readline().rstrip()
@@ -35,9 +37,12 @@ class GoBot:
 	def parseBoardState(self,data):
 		ptr = 0
 		grid = []
-		for i in range(BSIZE):
+		if len(data) != self.BSIZE*self.BSIZE:
+			exit('incomplete board state array data\n')
+			
+		for i in range(self.BSIZE):
 			row = []
-			for j in range(BSIZE):
+			for j in range(self.BSIZE):
 				row.append(data[ptr])
 				ptr += 1
 				
@@ -45,9 +50,11 @@ class GoBot:
 
 		return grid
 		
-	def onMyTurn(self):
-		
-		# do some thinking
+	def onMyTurn(self,player,boardState):
+		time.sleep(2)
+		x = random.randint(0,9);
+		y = random.randint(0,9);
+		p = random.randint(0,1);
 	
 		return x, y, p # here is my move
 	

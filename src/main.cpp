@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <stdio.h>
+#include <sstream>
 #include "Subprocess.h"
 #include "common.h"
 
@@ -9,83 +11,107 @@ using namespace std;
 
 const int TIME_OUT = 4;
 
-int main(int argc, char * argv[]) {
-	string b1name(argv[1]);
-	string b2name(argv[2]);
+struct Bot {
+	Subprocess * process;
+	string command;
+	string name;
+};
+
+int main(int argc, char * argv[]) {	
+	Bot b1;
+	Bot b2;
+	b1.command = argv[1];
+	b2.command = argv[2];
 	
-	cout << "New Game: " << b1name << " vs. " << b2name << endl << flush;
+	// figure out the names
+	int lastindex1 = b1.command.find_last_of(".");
+	int lastindex2 = b2.command.find_last_of(".");
+	b1.name = b1.command.substr(0, lastindex1); 
+	b2.name = b1.command.substr(0, lastindex2); 
+	if(b1.name == b2.name) {
+		b1.name += "1";
+		b2.name += "2";
+	}
+	
+	cout << "New Game: " << b1.name << " vs. " << b2.name << endl << flush;
 	
 	//Board board;
-	Subprocess bot1 = Subprocess::run(b1name);
-	Subprocess bot2 = Subprocess::run(b2name);
+	Subprocess sp1 = Subprocess::run(b1.command);
+	Subprocess sp2 = Subprocess::run(b2.command);
+	b1.process = &sp1;
+	b2.process = &sp2;
 	
 	// make sure the processes are still alive
-	assert(bot1.isAlive() && bot2.isAlive());
+	assert(b1.process->isAlive() && b2.process->isAlive());
 	
 	try {
 		// greet bot 1
-		log(b1name,"Waiting for greeting..");
-		string b1Greeting = bot1.readline(TIME_OUT);
+		log(b1.name,"Waiting for greeting..");
+		string b1Greeting = b1.process->readline(TIME_OUT);
 		if(b1Greeting != "HI!")
 			throw new BadMessageException(b1Greeting);
 		
-		log(b1name,"Received greeting.");
+		log(b1.name,"Received greeting.");
 		
-		bot1.writeline("INITIALIZE 1");
+		b1.process->writeline("INITIALIZE 1");
 		
-		string b1Ready = bot1.readline(TIME_OUT);
+		string b1Ready = b1.process->readline(TIME_OUT);
 		if(b1Ready != "READY!")
 			throw new BadMessageException(b1Ready);
-		log(b1name,"Bot is ready!");
+		log(b1.name,"Bot is ready!");
 		
 		// greet bot 2
-		log(b2name,"Waiting for greeting..");
-		string b2Greeting = bot2.readline(TIME_OUT);
+		log(b2.name,"Waiting for greeting..");
+		string b2Greeting = b2.process->readline(TIME_OUT);
 		if(b2Greeting != "HI!")
 			throw new BadMessageException(b2Greeting);
 			
-		log(b2name,"Received greeting.");
-		bot2.writeline("INITIALIZE 1");
+		log(b2.name,"Received greeting.");
+		b2.process->writeline("INITIALIZE 1");
 		
-		string b2Ready = bot2.readline(TIME_OUT);
+		string b2Ready = b2.process->readline(TIME_OUT);
 		if(b2Ready != "READY!")
 			throw new BadMessageException(b2Ready);
-		log(b2name,"Bot is ready!");
+		log(b2.name,"Bot is ready!");
 		
 	} catch(ReadTimeoutException ex) {
-		cerr << "[ReadTimeout] " << ex.what() << endl;
+		cerr << "[GreetingReadTimeout] " << ex.what() << endl;
 	} catch(BadMessageException ex) {
-		cerr << "[BadMessage] " << ex.what() << endl;
+		cerr << "[GreetingBadMessage] " << ex.what() << endl;
 	}
 	
-	/*
+	// track game state
 	bool turnBot1 = true;
 	int preX = -1;
 	int preY = -1;
 	int preP = 1;
+	
 	while(true) {
-		Subprocess * curBot;
-		Piece piece;
+		Bot * curBot = 0;
+		
+		// figure out the bot to interact with
 		if(turnBot1) {
-			curBot = &bot1;
-			piece = WHITE;
+			curBot = &b1;
 		} else {
-			curBot = &bot2;
-			piece = BLACK;
+			curBot = &b2;
 		}
 		
 		try {
 			// send move request
-			string request = sprintf("REQUEST_MOVE %s %d %d %d", board.encoded(), preX, preY, preP);
-			curBot->writeline(request);
+			stringstream request;
+			request << "REQUEST_MOVE ";
+			for(int i = 0; i < 81; i++)
+				request << "0";
+			request << " " << preX << " " << preY << " " << preP;
+			curBot->process->writeline(request.str());
+			log(curBot->name,"Sent request for move..");
 			
 			// handle move response
-			string response = curBot->readline(TIME_OUT);
+			string response = curBot->process->readline(TIME_OUT);
 			stringstream ss(response);
 			string msgType;
 			int x, y, p;
-			ss >> msgType >> x > y > p;
-			
+			ss >> msgType >> x >> y >> p;
 			
 			if(msgType != "RESPONSE_MOVE")
 				throw new BadMessageException(msgType);
@@ -94,8 +120,14 @@ int main(int argc, char * argv[]) {
 			preY = y;
 			preP = p;
 			
-			board.place(x,y,piece);
-			board.resolve();
+			if(preP == 1) {
+				log(curBot->name,"Bot passes. Next bot turn.");
+			} else {
+				log(curBot->name,"Got move. Now resolving.");
+				cout << "[" << curBot->name << "]" << " Got move: " 
+					<< preX << " " << preY << " " << endl;
+			}
+			
 		} catch(ReadTimeoutException ex) {
 			cerr << "timed out" << endl;
 			break;
@@ -111,10 +143,10 @@ int main(int argc, char * argv[]) {
 		}
 		
 		turnBot1 = !turnBot1;
-	}*/
+	}
 
-	bot1.writeline("ENDGAME");
-	bot2.writeline("ENDGAME");
+	b1.process->writeline("ENDGAME");
+	b2.process->writeline("ENDGAME");
 	
 	return 0;
 }
