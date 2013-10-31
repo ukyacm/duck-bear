@@ -15,6 +15,41 @@ struct Bot {
 	Subprocess * process;
 	string command;
 	string name;
+	void ExtractBotName(){
+		int lastIndex = -1;
+		int lastDotIndex = -1;
+		int length = command.length();
+		for(int i = 0; i < length ; ++i){
+			if ((command[i] >= 65 && command[i] <= 90) ||( command[i] >= 97 && command[i] <= 122)){
+				continue;
+			}
+			if (command[i] == 46){
+				lastDotIndex = i;
+			}
+			else
+			{
+				lastIndex = i;
+			}
+		}
+
+		if (lastIndex > 0 || lastDotIndex > 0){
+			if (lastDotIndex>lastIndex && lastIndex < 0){
+				name = command.substr(0,lastDotIndex);
+			}
+			if (lastDotIndex>lastIndex && lastIndex > 0){
+				int includeLen = lastDotIndex-1 - lastIndex;
+				name = command.substr(lastIndex+1,includeLen);
+			}
+			if (lastDotIndex<= 0 && lastIndex > 0){
+				int includeLen = length- lastIndex;
+				name = command.substr(lastIndex+1,includeLen);
+			}
+		}
+		else
+		{
+			name = command;
+		}
+	}
 };
 
 int main(int argc, char * argv[]) {	
@@ -24,10 +59,12 @@ int main(int argc, char * argv[]) {
 	b2.command = argv[2];
 	
 	// figure out the names
-	int lastindex1 = b1.command.find_last_of(".");
-	int lastindex2 = b2.command.find_last_of(".");
-	b1.name = b1.command.substr(0, lastindex1); 
-	b2.name = b1.command.substr(0, lastindex2); 
+	//int lastindex1 = b1.command.find_last_of(".");
+	//int lastindex2 = b2.command.find_last_of(".");
+	//b1.name = b1.command.substr(0, lastindex1); 
+	//b2.name = b2.command.substr(0, lastindex2); 
+	b1.ExtractBotName();
+	b2.ExtractBotName();
 	if(b1.name == b2.name) {
 		b1.name += "1";
 		b2.name += "2";
