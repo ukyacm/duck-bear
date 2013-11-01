@@ -43,7 +43,7 @@ struct Bot {
 				int includeLen = lastDotIndex-1 - lastIndex;
 				name = command.substr(lastIndex+1,includeLen);
 			}
-			if (lastDotIndex<= 0 && lastIndex > 0){
+			if (lastDotIndex < lastIndex && lastIndex > 0){
 				int includeLen = length- lastIndex;
 				name = command.substr(lastIndex+1,includeLen);
 			}
