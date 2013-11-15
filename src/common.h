@@ -4,6 +4,28 @@
 #include <exception>
 #include <string>
 
+static const int BOARD_SIZE = 9;
+
+enum Piece {
+	NONE, WHITE, BLACK
+};
+
+struct Point {
+	int x;
+	int y;
+
+	Point(int xx, int yy) {
+		x = xx;
+		y = yy;
+	}
+};
+
+struct PointCmp {
+	bool operator()(Point a, Point b) {
+		return a.x < b.x || a.y < b.y;
+	}
+};
+
 /*
  * Catch this when illegal game moves have been made
  */

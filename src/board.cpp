@@ -1,5 +1,5 @@
 #include "board.h"
-#include "common.h"
+#include "piecegroup.h"
 
 using namespace std;
 
@@ -45,19 +45,6 @@ vector<Point> Board::getNeighbors(Point p) {
 	if (p.y-1 >= 0) {points.push_back(Point(p.x,p.y-1));}
 	if (p.y+1 < BOARD_SIZE) {points.push_back(Point(p.x,p.y+1));}
 	return points;
-}
-
-vector<vector<Point> > Board::groupify(vector<Point> points) {
-	vector<vector<Point> > group;
-
-	for (vector<Point>::iterator p = points.begin(); p != points.end(); ++p) {
-		vector<Point> nbrs = getNeighbors(*p);
-		for (vector<Point>::iterator n = nbrs.begin(); n != nbrs.end(); ++n) {
-			if (at(*p) == at(*n)) {
-				
-			}
-		}
-	}
 }
 
 void Board::resolve(Piece player, int x, int y) {

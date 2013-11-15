@@ -1,6 +1,6 @@
 SRC_DIR = src
 
-GoEngine: common.o Subprocess.o main.o board.o
+GoEngine: common.o Subprocess.o main.o board.o piecegroup.o
 	g++ $(SRC_DIR)/main.o $(SRC_DIR)/common.o $(SRC_DIR)/Subprocess.o -lrt -o GoEngine
 
 common.o: $(SRC_DIR)/common.cpp $(SRC_DIR)/common.h
@@ -14,6 +14,9 @@ main.o: $(SRC_DIR)/main.cpp
 
 board.o: $(SRC_DIR)/board.cpp $(SRC_DIR)/board.h
 	g++ -c $(SRC_DIR)/board.cpp -o $(SRC_DIR)/board.o
+
+piecegroup.o: $(SRC_DIR)/piecegroup.cpp $(SRC_DIR)/piecegroup.h
+	g++ -c $(SRC_DIR)/piecegroup.cpp -o $(SRC_DIR)/piecegroup.o
 
 clean:
 	rm -rf src/*.o GoEngine

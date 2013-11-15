@@ -19,9 +19,9 @@ struct Bot {
 		int lastIndex = -1;
 		int lastDotIndex = -1;
 		int length = command.length();
-		for(int i = 0; i < length ; ++i){
+		for (int i = 0; i < length ; ++i) {
 			if ((command[i] >= 65 && command[i] <= 90) 
-			|| command[i] >= 97 && command[i] <= 122)
+			|| (command[i] >= 97 && command[i] <= 122)
 			|| (command[i] >= 48 && command[i]<= 57 )
 			){
 				continue;

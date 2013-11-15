@@ -1,34 +1,20 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "common.h"
+
 #include <vector>
 #include <string>
 #include <sstream>
 #include <exception>
 
-enum Piece {
-	NONE,
-	WHITE,
-	BLACK
-};
-
-struct Point {
-	int x;
-	int y;
-
-	Point(int xx, int yy) {
-		x = xx;
-		y = yy;
-	}
-};
-
 typedef std::vector<Piece> Row;
 typedef std::vector<Row> Grid;
 
+class PieceGroup;
+
 class Board {
 	public:
-	static const int BOARD_SIZE = 9;
-
 	Grid curr, prev, last;
 	
 	Board();
@@ -38,11 +24,12 @@ class Board {
 	Piece at(const Point p) const;
 	bool isOccupied(int x, int y);
 
+	std::vector<Point> getNeighbors(Point p);
+
 	std::string toString();
 
 	private:
 	std::vector<std::vector<Point> > groupify(std::vector<Point> points);
-	std::vector<Point> getNeighbors(Point p);
 	void resolve(Piece player, int x, int y);
 };
 
