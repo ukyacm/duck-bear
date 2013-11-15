@@ -1,6 +1,8 @@
 #include "board.h"
 #include "piecegroup.h"
 
+#include <algorithm>
+
 using namespace std;
 
 Board::Board() {
@@ -56,16 +58,60 @@ void Board::resolve(Piece player, int x, int y) {
 			Point p(i,j);
 			if (at(i,j) == WHITE) {
 				white.push_back(p);
-			} else {
+			} else if (at(i,j) == BLACK) {
 				black.push_back(p);
 			}
 		}
 	}
 
-	vector<vector<Point> > black_groups = groupify(black);
-	vector<vector<Point> > white_groups = groupify(white);
+	vector<PieceGroup> player1 = (player == WHITE ? groupify(black) : groupify(white));
+	vector<PieceGroup> player2 = (player == WHITE ? groupify(white) : groupify(black));
 
+	for (vector<PieceGroup>::iterator p1 = player1.begin(); p1 != player1.end(); ++p1) {
+		set<Point, PointCmp> edges = (*p1).getEdges();
+		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
+			if (at(*e) != NONE) {
+				set<Point, PointCmp> piecesToRemove = p1->pieces;
+				for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
+					p != piecesToRemove.end();
+					++p) {
+					curr[p->x][p->y] = NONE;
+					return;
+				}
+			}
+		}
+	}
+	
+	for (vector<PieceGroup>::iterator p2 = player2.begin(); p2 != player2.end(); ++p2) {
+		set<Point, PointCmp> edges = (*p2).getEdges();
+		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
+			if (at(*e) != NONE) {
+				set<Point, PointCmp> piecesToRemove = p2->pieces;
+				for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
+					p != piecesToRemove.end();
+					++p) {
+					curr[p->x][p->y] = NONE;
+					return;
+				}
+			}
+		}
+	}
+}
 
+vector<PieceGroup> Board::groupify(vector<Point> points) {
+	vector<PieceGroup> groups;
+	
+	vector<Point>::iterator p = points.begin();
+	while (p != points.end()) {
+		PieceGroup g(this, at(*p), set<Point, PointCmp>());
+		g.add(*p);
+		for (set<Point>::iterator it = g.pieces.begin(); it != g.pieces.end(); ++it) {
+			p = points.erase(remove(points.begin(), points.end(), *it), points.end());
+		}
+		groups.push_back(g);
+	}
+
+	return groups;
 }
 
 Piece Board::at(const int x, const int y) const {

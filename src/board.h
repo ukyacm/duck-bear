@@ -29,7 +29,7 @@ class Board {
 	std::string toString();
 
 	private:
-	std::vector<std::vector<Point> > groupify(std::vector<Point> points);
+	std::vector<PieceGroup> groupify(std::vector<Point> points);
 	void resolve(Piece player, int x, int y);
 };
 

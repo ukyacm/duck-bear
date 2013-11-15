@@ -9,6 +9,8 @@ class Board;
 
 class PieceGroup {
 	public:
+	std::set<Point, PointCmp> pieces;
+	
 	PieceGroup(Board *b, const Piece c, std::set<Point, PointCmp> p);
 
 	void add(const Point p);
@@ -18,7 +20,6 @@ class PieceGroup {
 	private:
 	Board *board;
 	Piece color;
-	std::set<Point, PointCmp> pieces;
 };
 
 #endif
