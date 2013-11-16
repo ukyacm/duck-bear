@@ -1,7 +1,7 @@
 SRC_DIR = src
 
 GoEngine: common.o Subprocess.o main.o board.o piecegroup.o
-	g++ $(SRC_DIR)/main.o $(SRC_DIR)/common.o $(SRC_DIR)/Subprocess.o -lrt -o GoEngine
+	g++ $(SRC_DIR)/main.o $(SRC_DIR)/common.o $(SRC_DIR)/Subprocess.o $(SRC_DIR)/piecegroup.o $(SRC_DIR)/board.o -lrt -o GoEngine
 
 common.o: $(SRC_DIR)/common.cpp $(SRC_DIR)/common.h
 	g++ -c $(SRC_DIR)/common.cpp -o $(SRC_DIR)/common.o

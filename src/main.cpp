@@ -157,7 +157,7 @@ int main(int argc, char * argv[]) {
 			ss >> msgType >> x >> y >> p;
 			
 			if(msgType != "RESPONSE_MOVE")
-				throw new BadMessageException(msgType);
+				throw BadMessageException(msgType);
 			
 			if(preP == 1) {
 				log(curBot->name,"Bot passes. Next bot turn.");
@@ -184,16 +184,16 @@ int main(int argc, char * argv[]) {
 			preP = p;
 			
 		} catch(ReadTimeoutException ex) {
-			cerr << "timed out" << endl;
+			cerr << "Bot has timed out! End game." << endl;
 			break;
 		} catch(IllegalMoveException ex) {
-			cerr << "illegal move: " << ex.what() << endl;
+			cerr << "Illegal Move: " << ex.what() << endl;
 			cerr << "Moving on.." << endl;
 		} catch(BadMessageException ex) {
-			cerr << "bad message: " << ex.what() << endl;
+			cerr << "Bad Message: " << ex.what() << endl;
 			break;
 		} catch(exception ex) {
-			cerr << "exception: " << ex.what() << endl;
+			cerr << "Unknown Exception: " << ex.what() << endl;
 			break;
 		}
 		

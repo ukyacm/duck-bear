@@ -25,7 +25,7 @@ class GoBot(object):
 				boardState = self.parseBoardState(msg[1])
 				x, y, p = self.onMyTurn(player,boardState)
 				self.sendMessage("RESPONSE_MOVE %s %s %s" % (x,y,p))
-			elif msg[0] == "END_GAME":
+			elif msg[0] == "ENDGAME":
 				exit()
 			else:
 				exit("bad msg, expected move; got '" + msg[0] + "'\n")
@@ -46,7 +46,7 @@ class GoBot(object):
 		for i in range(self.BSIZE):
 			row = []
 			for j in range(self.BSIZE):
-				row.append(data[ptr])
+				row.append(int(data[ptr]))
 				ptr += 1
 				
 			grid.append(row)
@@ -56,12 +56,5 @@ class GoBot(object):
 	@abstractmethod
 	def onMyTurn(self,player,boardState):
 		pass	
-	#def onMyTurn(self,player,boardState):
-	#	time.sleep(2)
-	#	x = random.randint(0,9);
-	#	y = random.randint(0,9);
-	#	p = random.randint(0,1);
-	#
-	#	return x, y, p # here is my move
 	
 

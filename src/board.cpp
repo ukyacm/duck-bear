@@ -19,11 +19,11 @@ bool Board::isOccupied(int x, int y) {
 
 void Board::place(int x, int y, Piece player) {	
 	if (!((0 <= x) && (x < BOARD_SIZE) && (0 <= y) && (y < BOARD_SIZE))) {
-		throw new IllegalMoveException("POSITION OUT OF BOUNDS");
+		throw IllegalMoveException("POSITION OUT OF BOUNDS");
 	}
 	
 	if (isOccupied(x,y)) {
-		throw new IllegalMoveException("POSITION ALREADY FULL");
+		throw IllegalMoveException("POSITION ALREADY FULL");
 	}
 
 	Grid temp = last;
@@ -37,7 +37,7 @@ void Board::place(int x, int y, Piece player) {
 		last = temp;
 		prev = last;
 		curr = prev;		
-		throw new IllegalMoveException("RETURN TO PREVIOUS STATE");
+		throw IllegalMoveException("RETURN TO PREVIOUS STATE");
 	}
 }
 
