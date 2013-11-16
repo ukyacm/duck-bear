@@ -27,6 +27,7 @@ class Board {
 	std::vector<Point> getNeighbors(Point p);
 
 	std::string toString();
+	std::string preview();
 
 	private:
 	std::vector<PieceGroup> groupify(std::vector<Point> points);

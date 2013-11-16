@@ -2,25 +2,26 @@
 #include "piecegroup.h"
 
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
 Board::Board() {
 	Row r(BOARD_SIZE, NONE);
-	Grid curr(BOARD_SIZE, r);
-	Grid prev(BOARD_SIZE, r);
-	Grid last(BOARD_SIZE, r);
+	curr = Grid(BOARD_SIZE, r);
+	prev = Grid(BOARD_SIZE, r);
+	last = Grid(BOARD_SIZE, r);
 }
 
 bool Board::isOccupied(int x, int y) {
-	return !curr[x][y];
+	return (curr[x][y] != NONE);
 }
 
-void Board::place(int x, int y, Piece player) {
+void Board::place(int x, int y, Piece player) {	
 	if (!((0 <= x) && (x < BOARD_SIZE) && (0 <= y) && (y < BOARD_SIZE))) {
 		throw new IllegalMoveException("POSITION OUT OF BOUNDS");
 	}
-
+	
 	if (isOccupied(x,y)) {
 		throw new IllegalMoveException("POSITION ALREADY FULL");
 	}
@@ -31,13 +32,13 @@ void Board::place(int x, int y, Piece player) {
 
 	curr[x][y] = player;
 	resolve(player,x,y);
-
-	if (curr == prev) {
+	
+	/*if (curr == prev) {
 		last = temp;
 		prev = last;
 		curr = prev;		
 		throw new IllegalMoveException("RETURN TO PREVIOUS STATE");
-	}
+	}*/
 }
 
 vector<Point> Board::getNeighbors(Point p) {
@@ -63,36 +64,62 @@ void Board::resolve(Piece player, int x, int y) {
 			}
 		}
 	}
-
-	vector<PieceGroup> player1 = (player == WHITE ? groupify(black) : groupify(white));
-	vector<PieceGroup> player2 = (player == WHITE ? groupify(white) : groupify(black));
-
+	
+	vector<PieceGroup> player1 = groupify(white);
+	vector<PieceGroup> player2 = groupify(black);
+	
+	// for each group belonging to player 1
 	for (vector<PieceGroup>::iterator p1 = player1.begin(); p1 != player1.end(); ++p1) {
+		// get the list of edge pieces
 		set<Point, PointCmp> edges = (*p1).getEdges();
+		
+		// assume it is surrounded
+		bool surrounded = true;
+		
+		// find a piece that proves otherwise
 		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
-			if (at(*e) != NONE) {
-				set<Point, PointCmp> piecesToRemove = p1->pieces;
-				for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
-					p != piecesToRemove.end();
-					++p) {
-					curr[p->x][p->y] = NONE;
-					return;
-				}
+			Piece pointColor = at(*e);
+			if (pointColor != BLACK) {
+				surrounded = false;
+				break;
+			}
+		}
+		
+		// remove surrounded pieces; i.e. this group
+		if(surrounded) {
+			set<Point, PointCmp> piecesToRemove = p1->pieces;
+			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
+				p != piecesToRemove.end();
+				++p) {
+				curr[p->x][p->y] = NONE;
 			}
 		}
 	}
 	
-	for (vector<PieceGroup>::iterator p2 = player2.begin(); p2 != player2.end(); ++p2) {
+	// for each group belonging to player 1
+	for (vector<PieceGroup>::iterator p2 = player1.begin(); p2 != player1.end(); ++p2) {
+		// get the list of edge pieces
 		set<Point, PointCmp> edges = (*p2).getEdges();
+		
+		// assume it is surrounded
+		bool surrounded = true;
+		
+		// find a piece that proves otherwise
 		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
-			if (at(*e) != NONE) {
-				set<Point, PointCmp> piecesToRemove = p2->pieces;
-				for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
-					p != piecesToRemove.end();
-					++p) {
-					curr[p->x][p->y] = NONE;
-					return;
-				}
+			Piece pointColor = at(*e);
+			if (pointColor != WHITE) {
+				surrounded = false;
+				break;
+			}
+		}
+		
+		// remove surrounded pieces; i.e. this group
+		if(surrounded) {
+			set<Point, PointCmp> piecesToRemove = p2->pieces;
+			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
+				p != piecesToRemove.end();
+				++p) {
+				curr[p->x][p->y] = NONE;
 			}
 		}
 	}
@@ -101,13 +128,12 @@ void Board::resolve(Piece player, int x, int y) {
 vector<PieceGroup> Board::groupify(vector<Point> points) {
 	vector<PieceGroup> groups;
 	
-	vector<Point>::iterator p = points.begin();
-	while (p != points.end()) {
-		PieceGroup g(this, at(*p), set<Point, PointCmp>());
-		g.add(*p);
-		for (set<Point>::iterator it = g.pieces.begin(); it != g.pieces.end(); ++it) {
-			p = points.erase(remove(points.begin(), points.end(), *it), points.end());
-		}
+	while (!points.empty()) {
+		Point p = points.back();
+		points.pop_back();
+		PieceGroup g(this, at(p), set<Point, PointCmp>());
+		vector<Point> visited;
+		g.add(p,points,visited);
 		groups.push_back(g);
 	}
 
@@ -129,6 +155,19 @@ string Board::toString() {
 		for (vector<Piece>::iterator p = (*r).begin(); p != (*r).end(); ++p) {
 			oss << (*p); 
 		}
+	}
+
+	return oss.str();
+}
+
+string Board::preview() {
+	ostringstream oss;
+
+	for (vector<Row>::iterator r = curr.begin(); r != curr.end(); ++r) {
+		for (vector<Piece>::iterator p = (*r).begin(); p != (*r).end(); ++p) {
+			oss << (*p) << " "; 
+		}
+		oss << endl;
 	}
 
 	return oss.str();

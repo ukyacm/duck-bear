@@ -7,7 +7,7 @@
 static const int BOARD_SIZE = 9;
 
 enum Piece {
-	NONE, WHITE, BLACK
+	NONE = 0, WHITE = 1, BLACK = 2
 };
 
 struct Point {
@@ -17,6 +17,10 @@ struct Point {
 	Point(int xx, int yy) {
 		x = xx;
 		y = yy;
+	}
+	
+	bool operator== (const Point &b) {
+		return (x == b.x) && (y == b.y);
 	}
 };
 
