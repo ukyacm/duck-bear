@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <sstream>
 #include "Subprocess.h"
+#include "board.h"
 #include "common.h"
 
 using namespace std;
@@ -84,6 +85,8 @@ int main(int argc, char * argv[]) {
 	// make sure the processes are still alive
 	assert(b1.process->isAlive() && b2.process->isAlive());
 	
+	Board board;
+	
 	try {
 		// greet bot 1
 		log(b1.name,"Waiting for greeting..");
@@ -125,6 +128,7 @@ int main(int argc, char * argv[]) {
 	int preX = -1;
 	int preY = -1;
 	int preP = 1;
+	int numPasses = 0;
 	
 	while(true) {
 		Bot * curBot = 0;
@@ -139,11 +143,10 @@ int main(int argc, char * argv[]) {
 		try {
 			// send move request
 			stringstream request;
-			request << "REQUEST_MOVE ";
-			for(int i = 0; i < 81; i++)
-				request << "0";
+			request << "REQUEST_MOVE " << board.toString();
 			request << " " << preX << " " << preY << " " << preP;
 			curBot->process->writeline(request.str());
+			//cout << request.str() << endl;
 			log(curBot->name,"Sent request for move..");
 			
 			// handle move response
@@ -155,25 +158,37 @@ int main(int argc, char * argv[]) {
 			
 			if(msgType != "RESPONSE_MOVE")
 				throw new BadMessageException(msgType);
-				
-			preX = x;
-			preY = y;
-			preP = p;
 			
 			if(preP == 1) {
 				log(curBot->name,"Bot passes. Next bot turn.");
+				numPasses++;
+				if(numPasses >= 2) {
+					log(curBot->name,"Both bots passes. End game.");
+					break;
+				}
 			} else {
+				numPasses = 0;
 				log(curBot->name,"Got move. Now resolving.");
-				cout << "[" << curBot->name << "]" << " Got move: " 
-					<< preX << " " << preY << " " << endl;
+				if(turnBot1)
+					board.place(x,y,WHITE);
+				else
+					board.place(x,y,BLACK);
+				
+				//cout << "[" << curBot->name << "]" << " Got move: " 
+					//<< preX << " " << preY << " " << endl;
 			}
+			cout << board.preview() << endl;
+			
+			preX = x;
+			preY = y;
+			preP = p;
 			
 		} catch(ReadTimeoutException ex) {
 			cerr << "timed out" << endl;
 			break;
 		} catch(IllegalMoveException ex) {
 			cerr << "illegal move: " << ex.what() << endl;
-			break;
+			cerr << "Moving on.." << endl;
 		} catch(BadMessageException ex) {
 			cerr << "bad message: " << ex.what() << endl;
 			break;
