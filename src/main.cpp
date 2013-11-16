@@ -159,7 +159,7 @@ int main(int argc, char * argv[]) {
 			if(msgType != "RESPONSE_MOVE")
 				throw BadMessageException(msgType);
 			
-			if(preP == 1) {
+			if(p == 1) {
 				log(curBot->name,"Bot passes. Next bot turn.");
 				numPasses++;
 				if(numPasses >= 2) {
