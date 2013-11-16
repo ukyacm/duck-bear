@@ -167,13 +167,13 @@ int main(int argc, char * argv[]) {
 					break;
 				}
 			} else {
-				numPasses = 0;
 				log(curBot->name,"Got move. Now resolving.");
 				if(turnBot1)
 					board.place(x,y,WHITE);
 				else
 					board.place(x,y,BLACK);
 				
+				numPasses = 0;
 				//cout << "[" << curBot->name << "]" << " Got move: " 
 					//<< preX << " " << preY << " " << endl;
 			}

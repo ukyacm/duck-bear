@@ -176,7 +176,17 @@ string Board::preview() {
 
 	for (vector<Row>::iterator r = curr.begin(); r != curr.end(); ++r) {
 		for (vector<Piece>::iterator p = (*r).begin(); p != (*r).end(); ++p) {
-			oss << (*p) << " "; 
+			switch(*p) {
+			case 0:
+				oss << " "; 
+				break;
+			case 1:
+				oss << "○ ";
+				break;
+			case 2:
+				oss << "◉ ";
+				break;
+			}
 		}
 		oss << endl;
 	}
