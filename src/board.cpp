@@ -33,12 +33,12 @@ void Board::place(int x, int y, Piece player) {
 	curr[x][y] = player;
 	resolve(player,x,y);
 	
-	/*if (curr == prev) {
+	if (curr == prev) {
 		last = temp;
 		prev = last;
 		curr = prev;		
 		throw new IllegalMoveException("RETURN TO PREVIOUS STATE");
-	}*/
+	}
 }
 
 vector<Point> Board::getNeighbors(Point p) {
@@ -65,9 +65,48 @@ void Board::resolve(Piece player, int x, int y) {
 		}
 	}
 	
-	vector<PieceGroup> player1 = groupify(white);
-	vector<PieceGroup> player2 = groupify(black);
-	
+	vector<PieceGroup> player1, player2;
+	Piece player1color, player2color;
+	if (player == WHITE) {
+		player1 = groupify(white);
+		player1color = WHITE;
+		player2 = groupify(black);
+		player2color = BLACK;
+	} else {
+		player1 = groupify(black);
+		player1color = BLACK;
+		player2 = groupify(white);
+		player2color = WHITE;
+	}
+
+	// for each group belonging to player 1
+	for (vector<PieceGroup>::iterator p2 = player2.begin(); p2 != player2.end(); ++p2) {
+		// get the list of edge pieces
+		set<Point, PointCmp> edges = (*p2).getEdges();
+		
+		// assume it is surrounded
+		bool surrounded = true;
+		
+		// find a piece that proves otherwise
+		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
+			Piece pointColor = at(*e);
+			if (pointColor != player1color) {
+				surrounded = false;
+				break;
+			}
+		}
+		
+		// remove surrounded pieces; i.e. this group
+		if(surrounded) {
+			set<Point, PointCmp> piecesToRemove = p2->pieces;
+			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
+				p != piecesToRemove.end();
+				++p) {
+				curr[p->x][p->y] = NONE;
+			}
+		}
+	}
+
 	// for each group belonging to player 1
 	for (vector<PieceGroup>::iterator p1 = player1.begin(); p1 != player1.end(); ++p1) {
 		// get the list of edge pieces
@@ -79,7 +118,7 @@ void Board::resolve(Piece player, int x, int y) {
 		// find a piece that proves otherwise
 		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
 			Piece pointColor = at(*e);
-			if (pointColor != BLACK) {
+			if (pointColor != player2color) {
 				surrounded = false;
 				break;
 			}
@@ -88,34 +127,6 @@ void Board::resolve(Piece player, int x, int y) {
 		// remove surrounded pieces; i.e. this group
 		if(surrounded) {
 			set<Point, PointCmp> piecesToRemove = p1->pieces;
-			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
-				p != piecesToRemove.end();
-				++p) {
-				curr[p->x][p->y] = NONE;
-			}
-		}
-	}
-	
-	// for each group belonging to player 1
-	for (vector<PieceGroup>::iterator p2 = player1.begin(); p2 != player1.end(); ++p2) {
-		// get the list of edge pieces
-		set<Point, PointCmp> edges = (*p2).getEdges();
-		
-		// assume it is surrounded
-		bool surrounded = true;
-		
-		// find a piece that proves otherwise
-		for (set<Point, PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
-			Piece pointColor = at(*e);
-			if (pointColor != WHITE) {
-				surrounded = false;
-				break;
-			}
-		}
-		
-		// remove surrounded pieces; i.e. this group
-		if(surrounded) {
-			set<Point, PointCmp> piecesToRemove = p2->pieces;
 			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
 				p != piecesToRemove.end();
 				++p) {
