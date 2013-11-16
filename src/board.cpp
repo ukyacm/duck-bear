@@ -178,7 +178,7 @@ string Board::preview() {
 		for (vector<Piece>::iterator p = (*r).begin(); p != (*r).end(); ++p) {
 			switch(*p) {
 			case 0:
-				oss << " "; 
+				oss << "  "; 
 				break;
 			case 1:
 				oss << "○ ";
