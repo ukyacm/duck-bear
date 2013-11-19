@@ -1,6 +1,16 @@
 duck-bear
 =========
 
+Todo
+=========
+- Scoring
+- Strike system
+- Documentation
+- Testing
+- Additional API
+- Tournament 
+- Web view player
+
 Its a secret to everyone.
 
 Engine
