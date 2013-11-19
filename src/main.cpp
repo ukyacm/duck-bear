@@ -188,7 +188,7 @@ int main(int argc, char * argv[]) {
 			break;
 		} catch(IllegalMoveException ex) {
 			cerr << "Illegal Move: " << ex.what() << endl;
-			cerr << "Moving on.." << endl;
+			cerr << "This counts as a pass." << endl;
 			numPasses++;
 		} catch(BadMessageException ex) {
 			cerr << "Bad Message: " << ex.what() << endl;

@@ -14,10 +14,12 @@ class ExampleBot(GoBot):
 			x = random.randint(0,8)
 			y = random.randint(0,8)
 			
-		p = random.randint(0,90);
+		p = random.randint(0,94);
 			
-		if p != 1:
+		if p != 3:
 			p = 0
+		else:
+			p = 1
 	
 		return x, y, p # here is my move
 	
