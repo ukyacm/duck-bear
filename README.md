@@ -1,6 +1,8 @@
 duck-bear
 =========
 
+Its a secret to everyone.
+
 Todo
 =========
 - Scoring
@@ -11,9 +13,10 @@ Todo
 - Tournament 
 - Web view player
 
-Its a secret to everyone.
+
 
 Engine
+=========
 - rule processing
 - transmit entire board states
 - handle timeout
@@ -25,14 +28,16 @@ Engine
 - keep previous two board state
 
 Exceptions
-Board::place(x,y) throws IllegalMoveException
-	- specifically: 
-	- out of bound (before resolve)
-	- occupied	(before resolve)
-	- return to previous state (after resolve)
-	- suicide	(after resolve)
+=========
+IllegalMoveException
+- specifically: 
+- out of bound (before resolve)
+- occupied	(before resolve)
+- return to previous state (after resolve)
+- suicide	(after resolve)
 
 API
+=========
 - languages: C++, Java, Python
 - can pass
 - parse board state into data structure
@@ -40,11 +45,13 @@ API
 - single transactions
 
 Viewer
+=========
 - move by move
 - back/forward button
 - current capture highlighted
 
-Process of events:
+Process of events
+=========
 - Engine creates two sub-processes, connects a pipe to each, sends "BEGIN" signal
 - Each bot takes the "BEGIN" signal along with the board size and their player number,
   returns "OK"
@@ -55,20 +62,24 @@ Process of events:
 - If bad move is sent to Engine, engine marks it as a [PASS] and gives that player a strike
 - 3 strikes and the player forfits
 
-Rule verification:
+Rule verification
+=========
 - Move is not already taken
 - Move does not replicate the board from the last 2 states
 - Move does not result in an immediate suicide
 
 Resolve move
+=========
 - Remove any pieces that need it, increment opposing player's score accordingly
 
-Possible End states:
+Possible End states
+=========
 - 3 consecutive PASS moves (must be from both players, error PASSes count)
 - A player has accumulated 3 error strikes
 - A player has said RESIGN
 
 Final Score Tally
+=========
 - Simple score, any white space bordered by only one color goes to that color
 - If a white space is bordered by two colors, stays neutral
 - Black player wins in case of ties
