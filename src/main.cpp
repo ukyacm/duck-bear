@@ -4,6 +4,8 @@
 #include <string>
 #include <stdio.h>
 #include <sstream>
+#include <map>
+
 #include "Subprocess.h"
 #include "board.h"
 #include "common.h"
@@ -129,7 +131,11 @@ int main(int argc, char * argv[]) {
 	int preY = -1;
 	int preP = 1;
 	int numPasses = 0;
-	
+
+	map<string, int> badMoves;
+	badMoves[b1.name] = 0;
+	badMoves[b2.name] = 0;
+
 	while(true) {
 		Bot * curBot = 0;
 		
@@ -189,7 +195,14 @@ int main(int argc, char * argv[]) {
 		} catch(IllegalMoveException ex) {
 			cerr << "Illegal Move: " << ex.what() << endl;
 			cerr << "This counts as a pass." << endl;
+			badMoves[curBot -> name]++;
 			numPasses++;
+
+			if (badMoves[curBot -> name] >= 3) {
+				cerr << "Too many illegal moves. Game ending." << endl;
+				break;
+			}
+
 		} catch(BadMessageException ex) {
 			cerr << "Bad Message: " << ex.what() << endl;
 			break;

@@ -22,8 +22,10 @@ App = new function() {
     this.canvas = document.getElementById("goCanvas");
     this.sprites = new Array();
     // gameMoves are already held in gameMoves because the json file is included at the top
-    //this.gameMoves = gameMoves;
-    
+    // this.gameMoves = gameMoves;
+   
+	this.turn = 0;
+
     this.main = function() {
         this.board = new Board(9, 25, 25, 550, 550);
         this.board.markers.push({x: 5,y: 5});
@@ -44,9 +46,11 @@ App = new function() {
     }
     
     this.onMouseDown = function(evt) {
-        for(var i = 0; i < App.sprites.length; i++)
+        App.turn += 1;
+		for(var i = 0; i < App.sprites.length; i++)
             App.sprites[i].inject(evt.pageX,evt.pageY);
-    }
+    	App.redraw();
+	}
     
     this.redraw = function() {
         var ctx = this.canvas.getContext("2d");
@@ -54,9 +58,8 @@ App = new function() {
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.board.draw(ctx);
         
-        var lastMove = gameMoves.length-1;
-
-        printBoard(2,ctx);
+		var turn = Math.min(App.turn, gameMoves.length-1);
+        printBoard(turn,ctx);
 
         // for(var i = 0; i < this.sprites.length; i++){
         //    this.sprites[i].draw(ctx);
@@ -107,7 +110,7 @@ Sprite = function(left,top,width,height, src) {
     
     this.draw = function(ctx) {
         this.img.onload = function(){
-            ctx.drawImage(this.img, left, top, this.width, this.height);
+            ctx.drawImage(this, left, top, this.width, this.height);
         }
         this.img.src = src;            
     } 
