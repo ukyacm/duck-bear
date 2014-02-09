@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <sstream>
 #include <map>
+#include <set>
 
 #include "Subprocess.h"
+#include "piecegroup.h"
 #include "board.h"
 #include "common.h"
 
@@ -144,7 +146,11 @@ int main(int argc, char * argv[]) {
 	map<string, int> badMoves;
 	badMoves[b1.name] = 0;
 	badMoves[b2.name] = 0;
-
+	
+	map<string, int> captured;
+	captured[b1.name] = 0;
+	captured[b2.name] = 0;
+	
 	int turn = 0;
 	string message = "";
 
@@ -189,16 +195,20 @@ int main(int argc, char * argv[]) {
 			} else {
 				log(curBot->name,"Got move. Now resolving.");
 				int* caps;
-				if(turnBot1)
+				if(turnBot1) {
 					caps = board.place(x,y,WHITE);
-				else
+					captured[b1.name] += caps[0];
+					captured[b2.name] += caps[1];
+				} else {
 					caps = board.place(x,y,BLACK);
-				
-				cout << caps[0] << " " << caps[1] << endl;
+					captured[b1.name] += caps[1];
+					captured[b2.name] += caps[0];
+				}
 				numPasses = 0;
 				//cout << "[" << curBot->name << "]" << " Got move: " 
 					//<< preX << " " << preY << " " << endl;
 			}
+			cout << b1.name << ": " << captured[b1.name] << " " << b2.name << ": " << captured[b2.name] << endl;
 			cout << board.preview() << endl;
 			
 			preX = x;
@@ -242,6 +252,47 @@ int main(int argc, char * argv[]) {
 
 	b1.process->writeline("ENDGAME");
 	b2.process->writeline("ENDGAME");
-	
+
+	map<string,int> points;
+	points[b1.name] = 0;
+	points[b2.name] = 0;
+
+	vector<Point> space;
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (board.at(i,j) == NONE) {
+				space.push_back(Point(i,j));
+			}
+		}
+	}
+	vector<PieceGroup> territory = board.groupify(space);
+
+	for (vector<PieceGroup>::iterator p = territory.begin(); p != territory.end(); ++p) {
+		set<Point, PointCmp> edges = (*p).getEdges();
+		bool allSame = true;
+
+		Piece commonColor = board.at(*(edges.begin()));
+		for (set<Point,PointCmp>::iterator e = edges.begin(); e != edges.end(); ++e) {
+			Piece color = board.at(*e);
+			if (color != commonColor) {
+				allSame = false;
+				break;
+			}
+		}
+
+		if (allSame) {
+			if (commonColor == WHITE) {
+				points[b1.name] += (*p).pieces.size();
+			}
+			if (commonColor == BLACK) {
+				points[b2.name] += (*p).pieces.size();
+			}
+		}
+	}
+
+	points[b1.name] -= captured[b2.name];
+	points[b2.name] -= captured[b1.name];
+	cout << b1.name << ": " << points[b1.name] << " " << b2.name << ": " << points[b2.name] << endl;
+
 	return 0;
 }
