@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import sys, os, random, time
-from bot import GoBot
+from GoBot import GoBot
 
-class ExampleBot(GoBot):
+class HedonismBot(GoBot):
 	def __init__(self):
 		self.anchor = (1,1)
 		self.stage = 1
@@ -62,7 +62,7 @@ class ExampleBot(GoBot):
 		return x, y
 	
 	def onMyTurn(self,player,boardState):
-		time.sleep(1)
+		time.sleep(0.01)
 		
 		self.mine = []
 		self.others = []
@@ -84,7 +84,7 @@ class ExampleBot(GoBot):
 		while True:
 			if self.jump:
 				self.anchor = self.nextAnchor()
-				self.jump = False
+				self.jump = False	
 				
 			consider = self.getEdges(self.anchor[0],self.anchor[1])
 			surely = [cell for cell in consider if cell not in self.filled]
@@ -96,5 +96,5 @@ class ExampleBot(GoBot):
 				
 		return x_out, y_out, 0 # here is my move
 	
-gobot = ExampleBot()
+gobot = HedonismBot()
 gobot.start()
