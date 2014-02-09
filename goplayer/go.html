@@ -9,10 +9,27 @@
     <style></style>
 </head>
 <body>
-    <canvas id="goCanvas" width="900px" height="600px">asd</canvas>
+    <canvas id="goCanvas" width="600px" height="600px">asd</canvas>
 <script>
 
 $(document).ready(function() {
+    
+    $.get('test.txt',function(data){
+        GameState = data.toString().split('\n');
+        len = GameState.length;
+        for (i = 0 ; i < len ;++i){
+            currTurnData = GameState[i].split(',');
+            GameState[i] = new Object();
+            GameState[i]['turn'] = currTurnData[0];
+            GameState[i]['p1'] = currTurnData[1];
+            GameState[i]['p2'] = currTurnData[2];
+            GameState[i]['Board'] = currTurnData[3];
+            GameState[i]['comment'] = currTurnData[4];
+
+
+        }
+      },'text');
+
       App.main();
 });  
     
@@ -65,10 +82,10 @@ App = new function() {
 }
 
 printBoard = function(turn, ctx){
-    for (var i = 0; i < 8; i++) {
-        for (var z=0; z < 8; z++){ 
-            if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '1' )
-                GamePiece(i, z, 'white', ctx);
+    for (var i = 0; i < 9; i++) {
+        for (var z=0; z < 9; z++){ 
+            //if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '1' )
+              //  GamePiece(i, z, 'white', ctx);
             if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '2')
                 GamePiece(i, z, 'black', ctx);
         }
