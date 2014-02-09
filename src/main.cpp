@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <stdio.h>
@@ -57,6 +58,14 @@ struct Bot {
 		}
 	}
 };
+
+void logfile(int turn, string p1, string p2, Board board, string message) {
+	ofstream file;
+	string name = p1+"-"+p2+".game";
+	file.open(name.c_str(), ios::out | ios::app);
+	file << turn << "," << p1 << "," << p2 << "," << board.toString() << "," << message << endl;
+	file.close();
+}
 
 int main(int argc, char * argv[]) {	
 	Bot b1;
@@ -136,6 +145,9 @@ int main(int argc, char * argv[]) {
 	badMoves[b1.name] = 0;
 	badMoves[b2.name] = 0;
 
+	int turn = 0;
+	string message = "";
+
 	while(true) {
 		Bot * curBot = 0;
 		
@@ -167,9 +179,11 @@ int main(int argc, char * argv[]) {
 			
 			if(p == 1) {
 				log(curBot->name,"Bot passes. Next bot turn.");
+				message += curBot->name + " passes.";
 				numPasses++;
 				if(numPasses >= 2) {
 					log(curBot->name,"Both bots passes. End game.");
+					message += " Both bots have passed. Game over.";
 					break;
 				}
 			} else {
@@ -193,6 +207,8 @@ int main(int argc, char * argv[]) {
 			
 		} catch(ReadTimeoutException ex) {
 			cerr << "Bot has timed out! End game." << endl;
+			message += "Bot has timed out. Game over.";
+			logfile(turn, b1.name, b2.name, board, message);
 			break;
 		} catch(IllegalMoveException ex) {
 			cerr << "Illegal Move: " << ex.what() << endl;
@@ -200,8 +216,12 @@ int main(int argc, char * argv[]) {
 			badMoves[curBot -> name]++;
 			numPasses++;
 
+			message += curBot->name + " has made an error. Pass.";
+
 			if (badMoves[curBot -> name] >= 3) {
 				cerr << "Too many illegal moves. Game ending." << endl;
+				message += " Too many illegal moves from " + curBot->name + ". Game over.";
+				logfile(turn, b1.name, b2.name, board, message);
 				break;
 			}
 
@@ -213,7 +233,11 @@ int main(int argc, char * argv[]) {
 			break;
 		}
 		
+		logfile(turn, b1.name, b2.name, board, message);
+		
+		message = "";
 		turnBot1 = !turnBot1;
+		turn++;
 	}
 
 	b1.process->writeline("ENDGAME");
