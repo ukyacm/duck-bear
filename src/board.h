@@ -19,7 +19,7 @@ class Board {
 	
 	Board();
 
-	void place(const int x, const int y, const Piece p);
+	int* place(const int x, const int y, const Piece p);
 	Piece at(const int x, const int y) const;
 	Piece at(const Point p) const;
 	bool isOccupied(int x, int y);
@@ -31,7 +31,7 @@ class Board {
 
 	private:
 	std::vector<PieceGroup> groupify(std::vector<Point> points);
-	void resolve(Piece player, int x, int y);
+	int* resolve(Piece player, int x, int y);
 };
 
 #endif

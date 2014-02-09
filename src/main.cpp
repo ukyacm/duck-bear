@@ -174,11 +174,13 @@ int main(int argc, char * argv[]) {
 				}
 			} else {
 				log(curBot->name,"Got move. Now resolving.");
+				int* caps;
 				if(turnBot1)
-					board.place(x,y,WHITE);
+					caps = board.place(x,y,WHITE);
 				else
-					board.place(x,y,BLACK);
+					caps = board.place(x,y,BLACK);
 				
+				cout << caps[0] << " " << caps[1] << endl;
 				numPasses = 0;
 				//cout << "[" << curBot->name << "]" << " Got move: " 
 					//<< preX << " " << preY << " " << endl;

@@ -17,7 +17,7 @@ bool Board::isOccupied(int x, int y) {
 	return (curr[x][y] != NONE);
 }
 
-void Board::place(int x, int y, Piece player) {	
+int* Board::place(int x, int y, Piece player) {	
 	if (!((0 <= x) && (x < BOARD_SIZE) && (0 <= y) && (y < BOARD_SIZE))) {
 		throw IllegalMoveException("POSITION OUT OF BOUNDS");
 	}
@@ -31,7 +31,9 @@ void Board::place(int x, int y, Piece player) {
 	prev = curr;
 
 	curr[x][y] = player;
-	resolve(player,x,y);
+	
+	int* pointer;
+	pointer = resolve(player,x,y);
 	
 	if (curr == prev) {
 		last = temp;
@@ -39,6 +41,8 @@ void Board::place(int x, int y, Piece player) {
 		curr = prev;		
 		throw IllegalMoveException("RETURN TO PREVIOUS STATE");
 	}
+
+	return pointer;
 }
 
 vector<Point> Board::getNeighbors(Point p) {
@@ -50,7 +54,7 @@ vector<Point> Board::getNeighbors(Point p) {
 	return points;
 }
 
-void Board::resolve(Piece player, int x, int y) {
+int* Board::resolve(Piece player, int x, int y) {
 	vector<Point> black;
 	vector<Point> white;
 
@@ -78,7 +82,8 @@ void Board::resolve(Piece player, int x, int y) {
 		player2 = groupify(white);
 		player2color = WHITE;
 	}
-
+	
+	int p1cap = 0;
 	// for each group belonging to player 1
 	for (vector<PieceGroup>::iterator p2 = player2.begin(); p2 != player2.end(); ++p2) {
 		// get the list of edge pieces
@@ -102,11 +107,13 @@ void Board::resolve(Piece player, int x, int y) {
 			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
 				p != piecesToRemove.end();
 				++p) {
+				p1cap++;
 				curr[p->x][p->y] = NONE;
 			}
 		}
 	}
 
+	int p2cap = 0;
 	// for each group belonging to player 1
 	for (vector<PieceGroup>::iterator p1 = player1.begin(); p1 != player1.end(); ++p1) {
 		// get the list of edge pieces
@@ -123,17 +130,25 @@ void Board::resolve(Piece player, int x, int y) {
 				break;
 			}
 		}
-		
+	
 		// remove surrounded pieces; i.e. this group
 		if(surrounded) {
 			set<Point, PointCmp> piecesToRemove = p1->pieces;
 			for (set<Point, PointCmp>::iterator p = piecesToRemove.begin();
 				p != piecesToRemove.end();
 				++p) {
+				p2cap++;
 				curr[p->x][p->y] = NONE;
 			}
 		}
 	}
+	
+	int* pointer;
+	int caps[1];
+	pointer = caps;
+	caps[0] = p1cap;
+	caps[1] = p2cap;
+	return pointer;
 }
 
 vector<PieceGroup> Board::groupify(vector<Point> points) {
