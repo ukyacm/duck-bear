@@ -218,7 +218,6 @@ int main(int argc, char * argv[]) {
 		} catch(ReadTimeoutException ex) {
 			cerr << "Bot has timed out! End game." << endl;
 			message += "Bot has timed out. Game over.";
-			logfile(turn, b1.name, b2.name, board, message);
 			break;
 		} catch(IllegalMoveException ex) {
 			cerr << "Illegal Move: " << ex.what() << endl;
@@ -231,7 +230,6 @@ int main(int argc, char * argv[]) {
 			if (badMoves[curBot -> name] >= 3) {
 				cerr << "Too many illegal moves. Game ending." << endl;
 				message += " Too many illegal moves from " + curBot->name + ". Game over.";
-				logfile(turn, b1.name, b2.name, board, message);
 				break;
 			}
 
@@ -292,7 +290,15 @@ int main(int argc, char * argv[]) {
 
 	points[b1.name] -= captured[b2.name];
 	points[b2.name] -= captured[b1.name];
+	
+	if (points[b1.name] < 0) points[b1.name] = 0;
+	if (points[b2.name] < 0) points[b2.name] = 0;
+
 	cout << b1.name << ": " << points[b1.name] << " " << b2.name << ": " << points[b2.name] << endl;
+	
+	message += " Final score: (" + to_string(points[b1.name]) + "-" + to_string(points[b2.name]) + ")";
+
+	logfile(turn, b1.name, b2.name, board, message);
 
 	return 0;
 }
