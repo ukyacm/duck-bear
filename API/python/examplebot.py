@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os, random, time
-from bot import GoBot
+from GoBot import GoBot
 
 class ExampleBot(GoBot):
 	def onMyTurn(self,player,boardState):
