@@ -12,37 +12,81 @@
     <canvas id="goCanvas" width="600px" height="600px">asd</canvas>
 <script>
 
+function readTextFile(file)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var GameState = rawFile.responseText;
+                this.GameState = data.toString().split('\n');
+                MaxTurn = GameState.length -1;
+                for (i = 0 ; i < MaxTurn ;++i){
+                    currTurnData = this.GameState[i].split(',');
+                    this.GameState[i] = new Object();
+                    this.GameState[i]['turn'] = currTurnData[0];
+                    this.GameState[i]['p1'] = currTurnData[1];
+                    this.GameState[i]['p2'] = currTurnData[2];
+                    this.GameState[i]['Board'] = currTurnData[3];
+                    this.GameState[i]['comment'] = currTurnData[4];
+                }
+            }
+    }
+    rawFile.send(null);
+}
+
+readTextFile('hedonismbot1-hedonismbot2.game');
+
+/*
+var GameState = new Object();
+    $(document).load(GameState = function(){
+        $.get('hedonismbot1-hedonismbot2.game', GameState = function(data){
+            this.GameState = data.toString().split('\n');
+            MaxTurn = GameState.length -1;
+            for (i = 0 ; i < MaxTurn ;++i){
+                currTurnData = this.GameState[i].split(',');
+                this.GameState[i] = new Object();
+                this.GameState[i]['turn'] = currTurnData[0];
+                this.GameState[i]['p1'] = currTurnData[1];
+                this.GameState[i]['p2'] = currTurnData[2];
+                this.GameState[i]['Board'] = currTurnData[3];
+                this.GameState[i]['comment'] = currTurnData[4];
+            }
+
+            return this.GameState;
+    },'text');
+    return GameState;
+ });
+*/
+
 $(document).ready(function() {
+
+    App.main(GameState);
+
+});
+
+
+// Check for the various File API support.
+if (window.File && window.FileReader && window.FileList && window.Blob) {
+  // Great success! All the File APIs are supported.
+} else {
+  alert('The File APIs are not fully supported in this browser.');
+}
     
-    $.get('test.txt',function(data){
-        GameState = data.toString().split('\n');
-        len = GameState.length;
-        for (i = 0 ; i < len ;++i){
-            currTurnData = GameState[i].split(',');
-            GameState[i] = new Object();
-            GameState[i]['turn'] = currTurnData[0];
-            GameState[i]['p1'] = currTurnData[1];
-            GameState[i]['p2'] = currTurnData[2];
-            GameState[i]['Board'] = currTurnData[3];
-            GameState[i]['comment'] = currTurnData[4];
-
-
-        }
-      },'text');
-
-      App.main();
-});  
-    
-App = new function() {
+App = new function(GS) {
+    this.GameState = GS;
     Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg' };
-
+    
     this.canvas = document.getElementById("goCanvas");
     this.sprites = new Array();
     // gameMoves are already held in gameMoves because the json file is included at the top
     // this.gameMoves = gameMoves;
    
-	this.turn = 0;
-
+	this.turn = 30;
     this.main = function() {
         this.board = new Board(9, 25, 25, 550, 550);
         this.board.markers.push({x: 5,y: 5});
@@ -75,8 +119,8 @@ App = new function() {
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.board.draw(ctx);
         
-		var turn = Math.min(App.turn, gameMoves.length-1);
-        printBoard(turn,ctx);
+		//var turn = Math.min(App.turn, gameMoves.length-1);
+        printBoard(App.turn,App.GameState,ctx);
 
         // for(var i = 0; i < this.sprites.length; i++){
         //    this.sprites[i].draw(ctx);
@@ -84,15 +128,29 @@ App = new function() {
     }
 }
 
-printBoard = function(turn, ctx){
-    for (var i = 0; i < 9; i++) {
+printBoard = function(turn,GameState,ctx){
+    for (var i = 0 ; i < 81; i++){
+        currPiece = GameState[30]['Board'][i];
+        if ( currPiece == "0")
+            continue;
+
+        x = i % 9;
+        y = i / 9;
+
+        if (currPiece == "1")
+            GamePiece(x,y,'white',ctx);
+        if (currPiece == "2")
+            GamePiece(x,y,'black',ctx);
+    }
+
+    /*for (var i = 0; i < 9; i++) {
         for (var z=0; z < 9; z++){ 
             //if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '1' )
               //  GamePiece(i, z, 'white', ctx);
             if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '2')
                 GamePiece(i, z, 'black', ctx);
         }
-    }
+    }*/
 }
 
 GamePiece = function(osX, osY, color,ctx) {
