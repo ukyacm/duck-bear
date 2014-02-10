@@ -11,82 +11,57 @@
 <body>
     <canvas id="goCanvas" width="600px" height="600px">asd</canvas>
 <script>
-
-function readTextFile(file)
-{
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, true);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                var GameState = rawFile.responseText;
-                this.GameState = data.toString().split('\n');
-                MaxTurn = GameState.length -1;
-                for (i = 0 ; i < MaxTurn ;++i){
-                    currTurnData = this.GameState[i].split(',');
-                    this.GameState[i] = new Object();
-                    this.GameState[i]['turn'] = currTurnData[0];
-                    this.GameState[i]['p1'] = currTurnData[1];
-                    this.GameState[i]['p2'] = currTurnData[2];
-                    this.GameState[i]['Board'] = currTurnData[3];
-                    this.GameState[i]['comment'] = currTurnData[4];
-                }
-            }
-    }
-    rawFile.send(null);
-}
-
-readTextFile('hedonismbot1-hedonismbot2.game');
-
-/*
 var GameState = new Object();
-    $(document).load(GameState = function(){
-        $.get('hedonismbot1-hedonismbot2.game', GameState = function(data){
-            this.GameState = data.toString().split('\n');
-            MaxTurn = GameState.length -1;
-            for (i = 0 ; i < MaxTurn ;++i){
-                currTurnData = this.GameState[i].split(',');
-                this.GameState[i] = new Object();
-                this.GameState[i]['turn'] = currTurnData[0];
-                this.GameState[i]['p1'] = currTurnData[1];
-                this.GameState[i]['p2'] = currTurnData[2];
-                this.GameState[i]['Board'] = currTurnData[3];
-                this.GameState[i]['comment'] = currTurnData[4];
-            }
 
-            return this.GameState;
-    },'text');
-    return GameState;
- });
-*/
+(function($){
+        var readHTMLFile = function(url){
+            var toReturn;
+            $.ajax({
+                url: url,
+                async: false
+            }).done(function(data){
+                toReturn = data;
+            });
+            return toReturn;
+        };
+        $.addPanels = function(url){
+            GameState = readHTMLFile(url);  
+        };
+     })(jQuery);
+
+function ParseFile(){
+    GameState = this.GameState.toString().split('\n');
+    len = GameState.length;
+    for (i = 0 ; i < len ;++i){
+        currTurnData = GameState[i].split(',');
+        GameState[i] = new Object();
+        GameState[i]['turn'] = currTurnData[0];
+        GameState[i]['p1'] = currTurnData[1];
+        GameState[i]['p2'] = currTurnData[2];
+        GameState[i]['Board'] = currTurnData[3];
+        GameState[i]['comment'] = currTurnData[4];
+
+        this.GameState = GameState;
+    }
+}
 
 $(document).ready(function() {
-
-    App.main(GameState);
-
+    //ReadDataFromFile("hedonismbot1-hedonismbot2.game");
+    $.addPanels("hedonismbot1-hedonismbot2.game");
+    ParseFile();
+    App.main();
 });
-
-
-// Check for the various File API support.
-if (window.File && window.FileReader && window.FileList && window.Blob) {
-  // Great success! All the File APIs are supported.
-} else {
-  alert('The File APIs are not fully supported in this browser.');
-}
     
-App = new function(GS) {
-    this.GameState = GS;
+App = new function() {
     Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg' };
-    
+
     this.canvas = document.getElementById("goCanvas");
     this.sprites = new Array();
     // gameMoves are already held in gameMoves because the json file is included at the top
     // this.gameMoves = gameMoves;
    
-	this.turn = 30;
+    this.turn = 0;
+
     this.main = function() {
         this.board = new Board(9, 25, 25, 550, 550);
         this.board.markers.push({x: 5,y: 5});
@@ -108,10 +83,10 @@ App = new function(GS) {
     
     this.onMouseDown = function(evt) {
         App.turn += 1;
-		for(var i = 0; i < App.sprites.length; i++)
+        for(var i = 0; i < App.sprites.length; i++)
             App.sprites[i].inject(evt.pageX,evt.pageY);
-    	App.redraw();
-	}
+        App.redraw();
+    }
     
     this.redraw = function() {
         var ctx = this.canvas.getContext("2d");
@@ -119,8 +94,8 @@ App = new function(GS) {
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.board.draw(ctx);
         
-		//var turn = Math.min(App.turn, gameMoves.length-1);
-        printBoard(App.turn,App.GameState,ctx);
+        var turn = Math.min(App.turn, gameMoves.length-1);
+        printBoard(turn,ctx);
 
         // for(var i = 0; i < this.sprites.length; i++){
         //    this.sprites[i].draw(ctx);
@@ -128,9 +103,9 @@ App = new function(GS) {
     }
 }
 
-printBoard = function(turn,GameState,ctx){
+printBoard = function(turn,ctx){
     for (var i = 0 ; i < 81; i++){
-        currPiece = GameState[30]['Board'][i];
+        currPiece = this.GameState[turn]['Board'][i];
         if ( currPiece == "0")
             continue;
 
@@ -142,15 +117,6 @@ printBoard = function(turn,GameState,ctx){
         if (currPiece == "2")
             GamePiece(x,y,'black',ctx);
     }
-
-    /*for (var i = 0; i < 9; i++) {
-        for (var z=0; z < 9; z++){ 
-            //if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '1' )
-              //  GamePiece(i, z, 'white', ctx);
-            if( gameMoves[turn]['board'][i.toString().concat(z.toString())] == '2')
-                GamePiece(i, z, 'black', ctx);
-        }
-    }*/
 }
 
 GamePiece = function(osX, osY, color,ctx) {
@@ -235,12 +201,13 @@ Board = function(size,osX,osY,width,height) {
         
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         for(var i = 0; i < this.markers.length; i++) {
-			var cell = this.markers[i];
-			var coord = {x: this.osX + this.cspaceX * cell.x, y: this.osY + this.cspaceY * cell.y};
-			ctx.fillRect(coord.x-mWidth,coord.y-mHeight,mWidth*2,mHeight*2);
-		}
+            var cell = this.markers[i];
+            var coord = {x: this.osX + this.cspaceX * cell.x, y: this.osY + this.cspaceY * cell.y};
+            ctx.fillRect(coord.x-mWidth,coord.y-mHeight,mWidth*2,mHeight*2);
+        }
     }
 }
+
 
 </script>
 </body> 
