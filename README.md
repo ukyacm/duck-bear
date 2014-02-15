@@ -1,19 +1,17 @@
 duck-bear
 =========
 
-Its a secret to everyone.
+Its a secret to no one.
 
 Todo
 =========
-- Scoring
-- Strike system
-- Documentation
-- Testing
-- Additional API
-- Tournament 
-- Web view player
-
-
+- Scoring .. CHECK
+- Strike system .. CHECK
+- Documentation .. ALMOST THERE
+- Testing .. ALMOST THERE
+- Additional API .. CHECK (JAVA)
+- Tournament .. DELAYED
+- Web view player .. CHECK (I THINK)
 
 Engine
 =========
@@ -74,7 +72,7 @@ Resolve move
 
 Possible End states
 =========
-- 3 consecutive PASS moves (must be from both players, error PASSes count)
+- 2 consecutive PASS moves (must be from both players, error PASSes count)
 - A player has accumulated 3 error strikes
 - A player has said RESIGN
 
