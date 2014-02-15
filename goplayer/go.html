@@ -100,16 +100,26 @@ body{
             <div class="panel panel-default">
                 <div class="panel-body" style="text-align:left">
                     <textarea id="messageCenter" class="form-control" rows="7"></textarea>
-                    <!-- <b id="messageCenter">Click Play to view the game</b> -->
                 </div>
             </div>  
         </div>
+        <div>
+        <form id="testform">
+        <select id="gameMenu" name="menu" class=".input-lg">
+        <option value="game1.game">Game1</option>
+        <option value="game2.game">Game2</option>
+        </select>
+        <input type="button" onClick="LoadGame(this.form.menu.options[this.form.menu.selectedIndex].value)" value="GO" class="btn-success">
+        </form>
+        </div>
+
     </div>
 </div>
 </div>
 </body>
 
 <script>
+//document.getElementById("testform").innerHTML = "TEST";
 var GameState = new Object();
 var MAX_TURN = 0;
 var playButtonOn = false;
@@ -117,8 +127,12 @@ var viewPlayer = false;
 var messageContent = "Click Play to view the game";
 var messageArea = document.getElementById("messageCenter");
 this.messageArea.value = this.messageContent;
+var currGameFilePath = "";
+var gameDir = "./games/";
+var bLoadedGame = false;
 
 var replaySpeed = 1000;
+
 
 
 (function($){
@@ -132,10 +146,35 @@ var replaySpeed = 1000;
             });
             return toReturn;
         };
+        var getFileList = function(url){
+            var toReturn;
+            $.ajax({
+                url:url,
+                async: false
+            }).done(function(data){
+                this.retStr = "";
+                fileList = $(data).find("a[href*='.game']");
+                var len = fileList.length
+                for(var i = 0; i < len ; i++){
+                    filePath = $(fileList[i]).attr('href');
+                    //console.log(filePath);
+                    this.retStr = this.retStr+"<option value=\""+filePath+"\">"+filePath+"</option>";
+                    //console.log(this.retStr);
+                }
+                console.log(this.retStr);
+                toReturn = this.retStr;
+            });
+            return toReturn;
+        };
+
         $.addPanels = function(url){
             GameState = readHTMLFile(url);  
         };
+        $.FetchFileList = function(url){
+            return getFileList(url);
+        };
      })(jQuery);
+
 
 function ParseFile(){
     GameState = this.GameState.toString().split('\n');
@@ -154,10 +193,19 @@ function ParseFile(){
     setPlayerNames();
 }
 
+function LoadGameList(){
+    //fetch raw list of file paths that is seperated by comma;
+    var filePathOptionList = $.FetchFileList(this.gameDir);
+    //console.log(filePathOptionList);
+    document.getElementById("gameMenu").innerHTML=filePathOptionList;
+
+}
+
 $(document).ready(function() {
     //ReadDataFromFile("hedonismbot1-hedonismbot2.game");
-    $.addPanels("hedonismbot1-hedonismbot2.game");
-    ParseFile();
+    //$.addPanels("hedonismbot1-hedonismbot2.game");
+    //ParseFile();
+    LoadGameList();
     App.main();
 });
     
@@ -188,6 +236,7 @@ App = new function() {
 
         this.sprites.push(spr);
         this.canvas.addEventListener("mousedown", this.onMouseDown, false);
+        
         this.redraw();
     }
     
@@ -205,8 +254,10 @@ App = new function() {
         this.board.draw(ctx);
         
         //var turn = Math.min(App.turn, gameMoves.length-1);
+        
         printBoard(App.turn,ctx);
         document.getElementById("turnCountDisplay").innerHTML = "Turn : " + App.turn;
+        
         // for(var i = 0; i < this.sprites.length; i++){
         //    this.sprites[i].draw(ctx);
         // }   
@@ -214,26 +265,28 @@ App = new function() {
 }
 
 printBoard = function(turn,ctx){
-    for (var i = 0 ; i < 81; i++){
-        currPiece = this.GameState[turn]['Board'][i];
-        if ( currPiece == "0")
-            continue;
+    if(this.bLoadedGame){
+        for (var i = 0 ; i < 81; i++){
+            currPiece = this.GameState[turn]['Board'][i];
+            if ( currPiece == "0")
+                continue;
 
-        x = i % 9;
-        y = i / 9;
+            x = i % 9;
+            y = i / 9;
 
-        if (currPiece == "1")
-            GamePiece(x,y,'white',ctx);
-        if (currPiece == "2")
-            GamePiece(x,y,'black',ctx);
-    }
+            if (currPiece == "1")
+                GamePiece(x,y,'white',ctx);
+            if (currPiece == "2")
+                GamePiece(x,y,'black',ctx);
+        }
 
-    //The below line should probably be elsewhere putting it here now to access GameState with convinence.
-    messageThisTurn = this.GameState[turn]["comment"];
-    if (messageThisTurn.length > 0){
-        this.messageContent = this.messageContent + "\n"+messageThisTurn;
-        this.messageArea.value = this.messageContent;
-        this.messageArea.scrollTop = this.messageArea.scrollHeight;
+        //The below line should probably be elsewhere putting it here now to access GameState with convinence.
+        messageThisTurn = this.GameState[turn]["comment"];
+        if (messageThisTurn.length > 0){
+            this.messageContent = this.messageContent + "\n"+messageThisTurn;
+            this.messageArea.value = this.messageContent;
+            this.messageArea.scrollTop = this.messageArea.scrollHeight;
+        }
     }
 }
 
@@ -382,6 +435,16 @@ function goToPreviousTurn(){
 function setPlayerNames(){
     document.getElementById("playerOneName").innerHTML = this.GameState[0]["p1"];
     document.getElementById("playerTwoName").innerHTML = this.GameState[0]["p2"];
+}
+
+function LoadGame(filePath){
+    this.bLoadedGame= true;
+    fullFilePath = gameDir + filePath;
+    console.log(fullFilePath);
+    $.addPanels(fullFilePath);
+    ParseFile();
+    App.turn=0;
+    App.redraw();
 }
 
 
