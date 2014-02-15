@@ -25,15 +25,15 @@ private:
 	void getMessage(vector<string>& inputMsg);
 
 	void parseBoardState(string rawBoardState);
-
+	int convert(string a);
 public:
 	GoBot();
 	~GoBot();
 	
 	void start();
 		
-	void setMyTurnMove(int iXPos, int iYPos, int iP);
-	virtual void onMyTurn(int boardState[m_iBoard_Row][m_iBoard_Col], int iPlayerNum) = 0;
+	//void setMyTurnMove(int iXPos, int iYPos, int iP);
+	virtual void onMyTurn(int boardState[m_iBoard_Row][m_iBoard_Col],int iPlayerNum, int &iNext_X_Move,int &iNext_Y_Move , int &iP) = 0;
 
 };
 

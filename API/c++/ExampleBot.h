@@ -22,7 +22,7 @@ public:
 	//
 	//iPLayerNum: a int value indicating indicate white or black 
 	//			  stone your bot plays
-	void onMyTurn(int BoardState[][9], int iPlayerNum);
+	void onMyTurn(int boardState[9][9], int iPlayerNum, int &iNext_X_Move,int &iNext_Y_Move , int &iP);
 };
 
 #endif
