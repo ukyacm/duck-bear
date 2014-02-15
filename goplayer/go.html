@@ -4,14 +4,136 @@
 <script src="two_moves.jsonp"></script>
 
 <script src="http://code.jquery.com/jquery-1.9.0rc1.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<style>
+body{
+  background: #000000 url(images/bg.png) repeat-x scroll 0% 0%;
+  font-family: Helvetica, Arial, serif;
+  color: #333333;
+}
+.panel{
+    background-color:transparent;
+}
+#goCanvas{
+    float:right;
+}
+#prevTurnButton{
+    width: 150px;
+    text-align: center;
+}
+#nextTurnButton{
+    width: 150px;
+    text-align: center;
+}
+#playButton{
+    width: 150px;
+    text-align: center;
+}
+#messageCenter{
+    font-size: 1.5em;
+}
+#title{
+    font-size: 3em;
+    height: 82px;
+}
+</style>
 <head>
     <meta charset="UTF-8">
     <style></style>
 </head>
 <body>
-    <canvas id="goCanvas" width="600px" height="600px">asd</canvas>
+<div id ="wrapper">
+<div id ="header">
+<div class = "col-md-4">
+    <img src = "images/ukacm.png" alt="University of Kentucky ACM Student Chapter">
+</div>
+<div class ="col-md-1"></div>
+<div class ="col-md-6">
+    <h1 id="title">UK ACM Spring 2014 Hackathon</h1>
+</div>
+</div>
+<div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+        <h1 id="playerOneName" class="text-right">Player1</h1>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+        <h1 id="turnCountDisplay" class="text-center">Turn : 0</h1>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+        <h1 id="playerTwoName" class="text-left">Player2</h1>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="col-md-6">
+        <div class="panel panel-default" style="border:none">
+            <div id="canvasDiv">
+            <canvas id="goCanvas" width="600px" height="600px">asd</canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="col-xd-3">
+            <div>
+            <button id="prevTurnButton" type="button" class="btn btn-success" onclick="
+            goToPreviousTurn()">Previous Turn</button>
+            </div>
+            <div>
+            <button id="playButton" type="button" class="btn btn-danger" onclick="togglePlayButton()">Play</button>
+            </div>
+            <div>
+            <button id="nextTurnButton" type="button"  class="btn btn-success" onclick="goToNextTurn()">Next Turn</button>
+            </div>
+        </div>
+        <div>
+            <center><h2>Message Center</h2></center>
+            <div class="panel panel-default">
+                <div class="panel-body" style="text-align:left">
+                    <textarea id="messageCenter" class="form-control" rows="7"></textarea>
+                </div>
+            </div>  
+        </div>
+        <div>
+        <form id="testform">
+        <select id="gameMenu" name="menu" class=".input-lg">
+        <option value="game1.game">Game1</option>
+        <option value="game2.game">Game2</option>
+        </select>
+        <input type="button" onClick="LoadGame(this.form.menu.options[this.form.menu.selectedIndex].value)" value="GO" class="btn-success">
+        </form>
+        </div>
+
+    </div>
+</div>
+</div>
+</body>
+
 <script>
+//document.getElementById("testform").innerHTML = "TEST";
 var GameState = new Object();
+var MAX_TURN = 0;
+var playButtonOn = false;
+var viewPlayer = false;
+var messageContent = "Click Play to view the game";
+var messageArea = document.getElementById("messageCenter");
+this.messageArea.value = this.messageContent;
+var currGameFilePath = "";
+var gameDir = "./games/";
+var bLoadedGame = false;
+
+var replaySpeed = 1000;
+
+
 
 (function($){
         var readHTMLFile = function(url){
@@ -24,37 +146,73 @@ var GameState = new Object();
             });
             return toReturn;
         };
+        var getFileList = function(url){
+            var toReturn;
+            $.ajax({
+                url:url,
+                async: false
+            }).done(function(data){
+                this.retStr = "";
+                fileList = $(data).find("a[href*='.game']");
+                var len = fileList.length
+                for(var i = 0; i < len ; i++){
+                    filePath = $(fileList[i]).attr('href');
+                    //console.log(filePath);
+                    this.retStr = this.retStr+"<option value=\""+filePath+"\">"+filePath+"</option>";
+                    //console.log(this.retStr);
+                }
+                console.log(this.retStr);
+                toReturn = this.retStr;
+            });
+            return toReturn;
+        };
+
         $.addPanels = function(url){
             GameState = readHTMLFile(url);  
         };
+        $.FetchFileList = function(url){
+            return getFileList(url);
+        };
      })(jQuery);
+
 
 function ParseFile(){
     GameState = this.GameState.toString().split('\n');
-    len = GameState.length;
-    for (i = 0 ; i < len ;++i){
+    this.MAX_TURN = GameState.length -1;
+
+    for (i = 0 ; i < this.MAX_TURN ;++i){
         currTurnData = GameState[i].split(',');
         GameState[i] = new Object();
         GameState[i]['turn'] = currTurnData[0];
         GameState[i]['p1'] = currTurnData[1];
         GameState[i]['p2'] = currTurnData[2];
         GameState[i]['Board'] = currTurnData[3];
-        GameState[i]['comment'] = currTurnData[4];
-
-        this.GameState = GameState;
+        GameState[i]['comment'] = currTurnData[4];        
     }
+    this.GameState = GameState;
+    setPlayerNames();
+}
+
+function LoadGameList(){
+    //fetch raw list of file paths that is seperated by comma;
+    var filePathOptionList = $.FetchFileList(this.gameDir);
+    //console.log(filePathOptionList);
+    document.getElementById("gameMenu").innerHTML=filePathOptionList;
+
 }
 
 $(document).ready(function() {
     //ReadDataFromFile("hedonismbot1-hedonismbot2.game");
-    $.addPanels("hedonismbot1-hedonismbot2.game");
-    ParseFile();
+    //$.addPanels("hedonismbot1-hedonismbot2.game");
+    //ParseFile();
+    LoadGameList();
     App.main();
 });
     
 App = new function() {
     Images = { 'arrow_right' : 'http://media.battlestarwiki.org/images/e/ef/Symbol_Down_Arrow.svg' };
 
+    
     this.canvas = document.getElementById("goCanvas");
     this.sprites = new Array();
     // gameMoves are already held in gameMoves because the json file is included at the top
@@ -78,14 +236,15 @@ App = new function() {
 
         this.sprites.push(spr);
         this.canvas.addEventListener("mousedown", this.onMouseDown, false);
+        
         this.redraw();
     }
     
     this.onMouseDown = function(evt) {
-        App.turn += 1;
+        /*App.turn += 1;
         for(var i = 0; i < App.sprites.length; i++)
             App.sprites[i].inject(evt.pageX,evt.pageY);
-        App.redraw();
+        App.redraw();*/
     }
     
     this.redraw = function() {
@@ -94,9 +253,11 @@ App = new function() {
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
         this.board.draw(ctx);
         
-        var turn = Math.min(App.turn, gameMoves.length-1);
-        printBoard(turn,ctx);
-
+        //var turn = Math.min(App.turn, gameMoves.length-1);
+        
+        printBoard(App.turn,ctx);
+        document.getElementById("turnCountDisplay").innerHTML = "Turn : " + App.turn;
+        
         // for(var i = 0; i < this.sprites.length; i++){
         //    this.sprites[i].draw(ctx);
         // }   
@@ -104,18 +265,28 @@ App = new function() {
 }
 
 printBoard = function(turn,ctx){
-    for (var i = 0 ; i < 81; i++){
-        currPiece = this.GameState[turn]['Board'][i];
-        if ( currPiece == "0")
-            continue;
+    if(this.bLoadedGame){
+        for (var i = 0 ; i < 81; i++){
+            currPiece = this.GameState[turn]['Board'][i];
+            if ( currPiece == "0")
+                continue;
 
-        x = i % 9;
-        y = i / 9;
+            x = i % 9;
+            y = i / 9;
 
-        if (currPiece == "1")
-            GamePiece(x,y,'white',ctx);
-        if (currPiece == "2")
-            GamePiece(x,y,'black',ctx);
+            if (currPiece == "1")
+                GamePiece(x,y,'white',ctx);
+            if (currPiece == "2")
+                GamePiece(x,y,'black',ctx);
+        }
+
+        //The below line should probably be elsewhere putting it here now to access GameState with convinence.
+        messageThisTurn = this.GameState[turn]["comment"];
+        if (messageThisTurn.length > 0){
+            this.messageContent = this.messageContent + "\n"+messageThisTurn;
+            this.messageArea.value = this.messageContent;
+            this.messageArea.scrollTop = this.messageArea.scrollHeight;
+        }
     }
 }
 
@@ -208,7 +379,75 @@ Board = function(size,osX,osY,width,height) {
     }
 }
 
+function displayNextTurn(){
+    App.turn++;
+    if (App.turn >= this.MAX_TURN){
+            togglePlayButton();
+            App.turn = 0;
+            return;
+    }
+    App.redraw();
+
+}
+
+function togglePlayButton(){
+    this.playButtonOn = !this.playButtonOn;
+    if(this.playButtonOn){
+        this.viewPlayer = setInterval('displayNextTurn()',replaySpeed);
+        document.getElementById("playButton").innerHTML = "Pause";
+    }
+    else{
+        if (this.viewPlayer){
+            clearInterval(this.viewPlayer);
+        }
+        document.getElementById("playButton").innerHTML = "Play";
+    }
+}
+
+function goToNextTurn(){
+    //console.log("going to next turn");
+    if(playButtonOn){
+        togglePlayButton()
+    }
+    App.turn++;
+    if(App.turn < this.MAX_TURN){
+        App.redraw();
+    }
+    else{
+        App.turn--;
+    }
+}
+
+function goToPreviousTurn(){
+    //console.log("going to prev turn");
+    if(playButtonOn){
+        togglePlayButton()
+    }
+    App.turn--;
+    if(App.turn >= 0){
+        App.redraw();
+    }
+    else{
+        App.turn++;
+    }
+}
+
+function setPlayerNames(){
+    document.getElementById("playerOneName").innerHTML = this.GameState[0]["p1"];
+    document.getElementById("playerTwoName").innerHTML = this.GameState[0]["p2"];
+}
+
+function LoadGame(filePath){
+    this.bLoadedGame= true;
+    fullFilePath = gameDir + filePath;
+    console.log(fullFilePath);
+    $.addPanels(fullFilePath);
+    ParseFile();
+    App.turn=0;
+    App.redraw();
+}
+
 
 </script>
-</body> 
+
 </html>
