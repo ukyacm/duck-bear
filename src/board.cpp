@@ -144,7 +144,7 @@ int* Board::resolve(Piece player, int x, int y) {
 	}
 	
 	int* pointer;
-	int caps[1];
+	int caps[2];
 	pointer = caps;
 	caps[0] = p1cap;
 	caps[1] = p2cap;

@@ -7,12 +7,14 @@
 #include <sstream>
 #include <map>
 #include <set>
+#include <time.h>
 
 #include "Subprocess.h"
 #include "piecegroup.h"
 #include "board.h"
 #include "common.h"
 
+#define MAX_DATE 80
 using namespace std;
 
 const int TIME_OUT = 4;
@@ -62,8 +64,21 @@ struct Bot {
 };
 
 void logfile(int turn, string p1, string p2, Board board, string message) {
+	time_t now;
+   	char the_date[MAX_DATE];
+
+   	the_date[0] = '\0';
+
+   	now = time(NULL);
+
+   	if (now != -1)
+   	{
+       strftime(the_date, MAX_DATE, "%H%M%S", localtime(&now));
+   	}
+
+   	//std::string(the_date);
 	ofstream file;
-	string name = p1+"-"+p2+".game";
+	string name = "./goplayer/games/"+p1+"-"+p2+the_date+".game";
 	file.open(name.c_str(), ios::out | ios::app);
 	file << turn << "," << p1 << "," << p2 << "," << board.toString() << "," << message << endl;
 	file.close();

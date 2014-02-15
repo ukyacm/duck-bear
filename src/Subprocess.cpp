@@ -29,14 +29,29 @@ bool Subprocess::isAlive() {
 	return (waitpid(pid,&status,WNOHANG) == 0);
 }
 
+#define MAX_DATE 80
 string Subprocess::readline(int timeout) {
-	struct timespec curtime;
-	time_t endsec;
+	//struct timespec curtime;
+	time_t now;
+
+	int endsec;
+ 
+   	char curtime[MAX_DATE];
+
+   	curtime[0] = '\0';
+
+   	now = time(NULL);
+
+   	if (now != -1)
+   	{
+       strftime(curtime, MAX_DATE, "%S", localtime(&now));
+   	}
+	
 	
 	// get the current time so we know 
 	// when to timeout
-	clock_gettime(CLOCK_MONOTONIC,&curtime);
-	endsec = curtime.tv_sec + timeout;
+	//clock_gettime(CLOCK_MONOTONIC,&curtime);
+	endsec = atoi(curtime) + timeout;
 	
 	// prepare for a call to select()
 	fd_set fds;
@@ -49,9 +64,19 @@ string Subprocess::readline(int timeout) {
 	while(true) {
 		// using the current time and the endtime,
 		// figure out how select() should wait before timing out
+		//int timeleft;
+		curtime[0] = '\0';
+
 		struct timeval timeleft;
-		clock_gettime(CLOCK_MONOTONIC,&curtime);
-		timeleft.tv_sec = endsec - curtime.tv_sec;
+		//clock_gettime(CLOCK_MONOTONIC,&curtime);
+		now = time(NULL);
+
+	   	if (now != -1)
+	   	{
+	       strftime(curtime, MAX_DATE, "%S", localtime(&now));
+	   	}
+
+		timeleft.tv_sec = endsec - atoi(curtime);
 		timeleft.tv_usec = 0;
 		
 		// read in char if works, throw exception if times out
