@@ -19,4 +19,4 @@ piecegroup.o: $(SRC_DIR)/piecegroup.cpp $(SRC_DIR)/piecegroup.h
 	g++ -c $(SRC_DIR)/piecegroup.cpp -o $(SRC_DIR)/piecegroup.o
 
 clean:
-	rm -rf src/*.o GoEngine
+	rm -rf $(SRC_DIR)/*.o GoEngine

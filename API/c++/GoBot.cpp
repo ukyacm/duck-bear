@@ -7,11 +7,11 @@
 #include <cstring>
 #include <cstddef>
 
-#include "UKACMBotMsgHandler.h"
+#include "GoBot.h"
 
 using namespace std;
 
-UKACMBotMsgHandler::UKACMBotMsgHandler(void){
+GoBot::GoBot(void){
 	
 	m_iXMove = -1;
 	m_iYMove = -1;
@@ -28,16 +28,16 @@ UKACMBotMsgHandler::UKACMBotMsgHandler(void){
 }
 
 
-UKACMBotMsgHandler::~UKACMBotMsgHandler(){
+GoBot::~GoBot(){
 
 }
 
-void UKACMBotMsgHandler::sendMessage(string sMsg){
+void GoBot::sendMessage(string sMsg){
 	cout << sMsg << "\n";
 	cout << flush;
 }
 
-void UKACMBotMsgHandler::getMessage(vector<string>& inputMsg){
+void GoBot::getMessage(vector<string>& inputMsg){
 	inputMsg.clear();
 	char str[256];
 	memset((void*) str, 0, 256*sizeof(char));
@@ -48,7 +48,7 @@ void UKACMBotMsgHandler::getMessage(vector<string>& inputMsg){
 	for(string word; ss >> word; inputMsg.push_back(word));
 }
 
-void UKACMBotMsgHandler::start(){
+void GoBot::start(){
 	sendMessage("HI!");
 	
 	vector<string> inputMsg;
@@ -96,14 +96,14 @@ void UKACMBotMsgHandler::start(){
 
 }
 
-void UKACMBotMsgHandler::setMyTurnMove(int iXPos, int iYPos, int iP){
+void GoBot::setMyTurnMove(int iXPos, int iYPos, int iP){
 	m_iXMove = iXPos;
 	m_iYMove = iYPos;
 	m_iP = iP;
 
 }
 
-void UKACMBotMsgHandler::parseBoardState(string rawBoardState){
+void GoBot::parseBoardState(string rawBoardState){
 	int iTotalBoardSize = m_iBoard_Row*m_iBoard_Col;
 
 	if (rawBoardState.size() != iTotalBoardSize){

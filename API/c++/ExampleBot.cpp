@@ -1,5 +1,5 @@
-#include "UKACMBotMsgHandler.h"
-#include "UKACMGoAPI.h"
+#include "GoBot.h"
+#include "ExampleBot.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void UKACMGoAPI::onMyTurn(int boardState[][9], int iPlayerNum){
+void ExampleBot::onMyTurn(int boardState[][9], int iPlayerNum){
 	int iNext_X_Move, iNext_Y_Move, iP;
 
 	//Your Turn Process goes here, decide where you want go with xPos , yPos
@@ -17,4 +17,9 @@ void UKACMGoAPI::onMyTurn(int boardState[][9], int iPlayerNum){
 	iP = rand() % 1;
 
 	setMyTurnMove(iNext_X_Move,iNext_Y_Move,iP);
+}
+
+int main(){
+	ExampleBot * bot = new ExampleBot();
+	bot->start();
 }

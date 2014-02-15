@@ -1,16 +1,13 @@
-#ifndef UKACMBotMsgHandler_H
-#define UKACMBotMsgHandler_H
-
-//#include "UKACMGoAPI.h"
+#ifndef GOBOT_H
+#define GOBOT_H
 
 #include <vector>
 #include <iostream>
 #include <string>
 
-
 using namespace std;
 
-class UKACMBotMsgHandler{
+class GoBot{
 
 private:
 	static const int m_iBoard_Row = 9;
@@ -30,8 +27,8 @@ private:
 	void parseBoardState(string rawBoardState);
 
 public:
-	UKACMBotMsgHandler();
-	~UKACMBotMsgHandler();
+	GoBot();
+	~GoBot();
 	
 	void start();
 		

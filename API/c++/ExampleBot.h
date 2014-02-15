@@ -1,19 +1,17 @@
-#ifndef UKACMGOAPI_H
-#define UKACMGOAPI_H
+#ifndef EXAMPLEBOT_H
+#define EXAMPLEBOT_H
 
-#include "UKACMBotMsgHandler.h"
+#include "GoBot.h"
 
-class UKACMBotMsgHandler;
-class UKACMGoAPI;
+class GoBot;
 
-
-class UKACMGoAPI : public UKACMBotMsgHandler{
+class ExampleBot : public GoBot {
 public:
 
-	UKACMGoAPI(){
+	ExampleBot(){
 	};
 
-	~UKACMGoAPI(){
+	~ExampleBot(){
 
 	};
 
@@ -24,7 +22,7 @@ public:
 	//
 	//iPLayerNum: a int value indicating indicate white or black 
 	//			  stone your bot plays
-	void onMyTurn(int BoardState[][9], int iPlayerNum );
+	void onMyTurn(int BoardState[][9], int iPlayerNum);
 };
 
 #endif
