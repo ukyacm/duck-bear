@@ -10,7 +10,7 @@ Subprocess.o: $(SRC_DIR)/Subprocess.cpp $(SRC_DIR)/Subprocess.h
 	g++ -c $(SRC_DIR)/Subprocess.cpp -o $(SRC_DIR)/Subprocess.o
 
 main.o: $(SRC_DIR)/main.cpp
-	g++ -std=c++11 -c $(SRC_DIR)/main.cpp -o $(SRC_DIR)/main.o
+	g++ -std=c++0x -c $(SRC_DIR)/main.cpp -o $(SRC_DIR)/main.o
 
 board.o: $(SRC_DIR)/board.cpp $(SRC_DIR)/board.h
 	g++ -c $(SRC_DIR)/board.cpp -o $(SRC_DIR)/board.o
