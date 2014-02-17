@@ -63,7 +63,18 @@ struct Bot {
 	}
 };
 
-void logfile(int turn, string p1, string p2, Board board, string message) {
+void logfile(int turn, string p1, string p2, Board board, string message, string filename) {
+
+
+   	//std::string(the_date);
+	ofstream file;
+	file.open(filename.c_str(), ios::out | ios::app);
+	file << turn << "," << p1 << "," << p2 << "," << board.toString() << "," << message << endl;
+	file.close();
+}
+
+string getFileName(string p1 , string p2 ){
+	//Get the time when the bot was being ran to differentiate different game with same opponenets
 	time_t now;
    	char the_date[MAX_DATE];
 
@@ -76,12 +87,9 @@ void logfile(int turn, string p1, string p2, Board board, string message) {
        strftime(the_date, MAX_DATE, "%H%M%S", localtime(&now));
    	}
 
-   	//std::string(the_date);
-	ofstream file;
-	string name = "./goplayer/games/"+p1+"-"+p2+the_date+".game";
-	file.open(name.c_str(), ios::out | ios::app);
-	file << turn << "," << p1 << "," << p2 << "," << board.toString() << "," << message << endl;
-	file.close();
+   	string name = "./goplayer/games/"+p1+"-"+p2+the_date+".game";
+
+	return name;   	
 }
 
 int main(int argc, char * argv[]) {	
@@ -166,6 +174,9 @@ int main(int argc, char * argv[]) {
 	captured[b1.name] = 0;
 	captured[b2.name] = 0;
 	
+
+	string sLogFileName = getFileName(b1.name,b2.name);
+
 	int turn = 0;
 	string message = "";
 
@@ -256,7 +267,7 @@ int main(int argc, char * argv[]) {
 			break;
 		}
 		
-		logfile(turn, b1.name, b2.name, board, message);
+		logfile(turn, b1.name, b2.name, board, message, sLogFileName);
 		
 		message = "";
 		turnBot1 = !turnBot1;
@@ -313,7 +324,7 @@ int main(int argc, char * argv[]) {
 	
 	message += " Final score: (" + to_string(points[b1.name]) + "-" + to_string(points[b2.name]) + ")";
 
-	logfile(turn, b1.name, b2.name, board, message);
+	logfile(turn, b1.name, b2.name, board, message, sLogFileName);
 
 	return 0;
 }
