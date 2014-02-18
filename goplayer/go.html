@@ -219,6 +219,7 @@ App = new function() {
     // this.gameMoves = gameMoves;
    
     this.turn = 0;
+    this.ctx = this.canvas.getContext("2d");
 
     this.main = function() {
         this.board = new Board(9, 25, 25, 550, 550);
@@ -237,25 +238,40 @@ App = new function() {
         this.sprites.push(spr);
         this.canvas.addEventListener("mousedown", this.onMouseDown, false);
         
+       //var ctx = this.canvas.getContext("2d");
+        this.ctx.fillStyle = "#E8E6A7";
+        this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+        this.board.draw(this.ctx);
+
         this.redraw();
     }
     
     this.onMouseDown = function(evt) {
-        /*App.turn += 1;
-        for(var i = 0; i < App.sprites.length; i++)
-            App.sprites[i].inject(evt.pageX,evt.pageY);
-        App.redraw();*/
+        App.turn += 1;
+        //alert("clicked");
+       /*for(var i = 0; i < App.sprites.length; i++)
+            [i].inject(evt.pageX,evt.pageY);*/
+        xPos = evt.layerX - 80;
+        yPos = evt.layerY - 80;
+        deltaX = xPos%55;
+        deltaY = yPos%55;
+        if ( deltaX >= 22.5) x = xPos / 55 + 1;
+        else x = xPos/55;
+        if ( deltaY >= 22.5) y = yPos / 55 + 1;
+        else y = yPos/55;
+
+        //To-Do: Send message to engine you have made the move (x,y), also check with the board state of the current state, and make sure there is no existing piece, othwerwise do:
+        //alert("There is already a piece at this location, illegal move!")
+        GamePiece(x,y,'white',App.ctx);
+        
     }
     
     this.redraw = function() {
-        var ctx = this.canvas.getContext("2d");
-        ctx.fillStyle = "#E8E6A7";
-        ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-        this.board.draw(ctx);
+        
         
         //var turn = Math.min(App.turn, gameMoves.length-1);
         
-        printBoard(App.turn,ctx);
+        printBoard(App.turn,this.ctx);
         document.getElementById("turnCountDisplay").innerHTML = "Turn : " + App.turn;
         
         // for(var i = 0; i < this.sprites.length; i++){
