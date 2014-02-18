@@ -239,9 +239,7 @@ App = new function() {
         this.canvas.addEventListener("mousedown", this.onMouseDown, false);
         
        //var ctx = this.canvas.getContext("2d");
-        this.ctx.fillStyle = "#E8E6A7";
-        this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-        this.board.draw(this.ctx);
+        
 
         this.redraw();
     }
@@ -268,7 +266,9 @@ App = new function() {
     
     this.redraw = function() {
         
-        
+        this.ctx.fillStyle = "#E8E6A7";
+        this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+        this.board.draw(App.ctx);
         //var turn = Math.min(App.turn, gameMoves.length-1);
         
         printBoard(App.turn,this.ctx);
