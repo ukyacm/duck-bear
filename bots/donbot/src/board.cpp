@@ -13,6 +13,12 @@ Board::Board() {
 	last = Grid(BOARD_SIZE, r);
 }
 
+Board::Board(Grid tcurr, Grid tprev, Grid tlast) {
+	curr = tcurr;
+	prev = tprev;
+	last = tlast;
+}
+
 bool Board::isOccupied(int x, int y) {
 	return (curr[x][y] != NONE);
 }
@@ -32,8 +38,7 @@ int* Board::place(int x, int y, Piece player) {
 
 	curr[x][y] = player;
 	
-	int* pointer;
-	pointer = resolve(player,x,y);
+	int * pointer = resolve(player,x,y);
 	
 	if (curr == prev) {
 		last = temp;
@@ -43,6 +48,29 @@ int* Board::place(int x, int y, Piece player) {
 	}
 
 	return pointer;
+}
+
+Board * Board::placeGet(const int x, const int y, const Piece player) {	
+	if (!((0 <= x) && (x < BOARD_SIZE) && (0 <= y) && (y < BOARD_SIZE))) {
+		return 0;
+	}
+	
+	if (isOccupied(x,y)) {
+		return 0;
+	}
+
+	Board * next = new Board(*this);
+	next->last = next->prev;
+	next->prev = next->curr;
+	next->curr[x][y] = player;
+	next->resolve(player,x,y);
+	
+	if (next->curr == next->prev) {
+		delete next;
+		return 0;
+	}
+
+	return next;
 }
 
 vector<Point> Board::getNeighbors(Point p) {
@@ -143,9 +171,9 @@ int* Board::resolve(Piece player, int x, int y) {
 		}
 	}
 	
-//	int* pointer;
+	//int* pointer;
 	int * caps = new int[2];
-//	pointer = caps;
+	//pointer = caps;
 	caps[0] = p1cap;
 	caps[1] = p2cap;
 	return caps;

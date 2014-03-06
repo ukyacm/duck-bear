@@ -17,7 +17,7 @@
 #define MAX_DATE 80
 using namespace std;
 
-const int TIME_OUT = 4;
+const int TIME_OUT = 120;
 
 struct Bot {
 	Subprocess * process;
@@ -146,7 +146,7 @@ int main(int argc, char * argv[]) {
 			throw new BadMessageException(b2Greeting);
 			
 		log(b2.name,"Received greeting.");
-		b2.process->writeline("INITIALIZE 1");
+		b2.process->writeline("INITIALIZE 2");
 		
 		string b2Ready = b2.process->readline(TIME_OUT);
 		if(b2Ready != "READY!")
