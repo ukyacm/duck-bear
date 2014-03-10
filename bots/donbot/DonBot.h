@@ -19,10 +19,11 @@ public:
 
 	int mPlayerNumber;
 
-	MoveNode minimax(Board * board, int depth, bool isMaximizing);
+	MoveNode minimax(Board * board, int depth, int alpha, int beta, bool isMaximizing);
 	list<Point> getPossibleMoves(const Grid &state, int mPlayerNumber);
-
+	vector<Point> getNeighbors(Point p);
 	Grid stateToGrid(int boardState[9][9]);
+	Point bad;
 
 	Grid prev;
 	Grid last;

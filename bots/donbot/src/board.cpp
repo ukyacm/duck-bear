@@ -65,7 +65,7 @@ Board * Board::placeGet(const int x, const int y, const Piece player) {
 	next->curr[x][y] = player;
 	next->resolve(player,x,y);
 	
-	if (next->curr == next->prev) {
+	if (next->curr == next->prev || next->curr == next->last) {
 		delete next;
 		return 0;
 	}

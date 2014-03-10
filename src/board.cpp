@@ -36,9 +36,9 @@ int* Board::place(int x, int y, Piece player) {
 	pointer = resolve(player,x,y);
 	
 	if (curr == prev) {
-		last = temp;
+		curr = prev;	
 		prev = last;
-		curr = prev;		
+		last = temp;	
 		throw IllegalMoveException("RETURN TO PREVIOUS STATE");
 	}
 
